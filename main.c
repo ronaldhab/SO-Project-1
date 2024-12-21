@@ -29,7 +29,7 @@ void identificar_enlaces_simbolicos(const char *directorio) {
 }
 
 int main() {
-    char directorio[] = "/ruta/a/tu/directorio"; // Reemplaza con la ruta del directorio a analizar
+    char directorio[] = "/home/ronald/Desktop/proyectCodes/"; // Reemplaza con la ruta del directorio a analizar
     identificar_enlaces_simbolicos(directorio);
     return 0;
 }
