@@ -31,7 +31,7 @@ void identificar_enlaces_simbolicos(const char *directorio) {
 
 int main(int argc, char *argv[]) {
     identificar_argumentos(argc, argv);
-    char directorio[] = argv[4];
+    char *directorio = argv[4];
     identificar_enlaces_simbolicos(directorio);
     return 0;
 }
