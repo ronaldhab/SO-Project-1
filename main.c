@@ -31,6 +31,29 @@ void identificar_enlaces_simbolicos(const char *directorio) {
     }
 }
 
+int es_directorio_valido(const char *ruta) {
+    struct stat info;
+
+    if (stat(ruta, &info) != 0) {
+        // Error al obtener información del archivo/directorio
+        if (errno == ENOENT) {
+          fprintf(stderr,"Error: El directorio no existe\n");
+        } else if(errno == EACCES){
+          fprintf(stderr,"Error: No tienes permisos para acceder a este directorio\n");
+        } else {
+          fprintf(stderr,"Error desconocido al acceder al directorio\n");
+        }
+        return 0; // No es un directorio válido
+    }
+
+    if (S_ISDIR(info.st_mode)) {
+        return 1; // Es un directorio
+    } else {
+        fprintf(stderr,"Error: La ruta proporcionada no es un directorio\n");
+        return 0; // No es un directorio
+    }
+}
+
 // ./duplicados -t <numero de threads> -d <directorio de inicio> -m <e | l >
 void identificar_argumentos(int argc, char *argv[]){
 
@@ -77,7 +100,12 @@ void identificar_argumentos(int argc, char *argv[]){
     if(strcmp(argv[3], "-d") != 0){
         printf("Usa: %s -t %ld -d <directorio de inicio> -m <e | l >\n", argv[0], num);
         exit(1);
-    } 
+    }
+
+    //Comprobacion quinto argumento
+    if(es_directorio_valido(argv[4]) != 1){
+        exit(1);
+    }
 }
 
 
