@@ -1,2 +1,2 @@
-**Proyecto 1**
+**Proyecto 1:**
 Buscador de archivos duplicados
