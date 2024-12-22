@@ -28,6 +28,5 @@ int main(int argc, char *argv[]) {
     // printf("El tamanio es: %ld", strlen(argv));
     char *directorio = argv[4];
     identificar_enlaces_simbolicos(directorio);
-    comparar_hash();
     return 0;
 }
