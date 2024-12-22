@@ -1,12 +1,16 @@
 TARGET = main
-OBJS = main.o 
+SRC = explora_dir.c estructuras.c
+OBJ = $(SRC:.c=.o)
+INCLUDE = estructuras.h
 CC = gcc
 
-$(TARGET): $(OBJS)
-	$(CC) $(OBJS) -o $(TARGET)
+all: $(TARGET)
 
-%.o: %.c 
-	$(CC) -c $< -o $@
+$(TARGET): $(OBJ)
+	$(CC) $(OBJ) -o $(TARGET)
+
+%.o: %.c $(INCLUDE)
+	$(CC) -c -o $@ $< 
 
 .PHONY: clear
 clear:
