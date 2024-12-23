@@ -3,7 +3,6 @@
 #include "operaciones.h"
 #include <string.h>
 
-
 char *duplicados[];
 
 void comparar_hash() {
