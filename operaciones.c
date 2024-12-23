@@ -1,12 +1,38 @@
 #define _DEFAULT_SOURCE
 #include <dirent.h>
-#include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
-#include "estructuras.h"
+#include "md5-lib/md5.h"
+#include "operaciones.h"
 
 struct Nodo *tope_pila = NULL;
-cabeza = NULL;
+struct Nodo_visitados *cabeza = NULL;
+char *duplicados[];
+
+/*Funcion para comparar los hash*/
+void comparar_hash() {
+    int cont = 0;
+    for(int i = 0; i < (strlen(cabeza) + 1); i++) {
+        for(int j = 0; j < (strlen(cabeza) + 1); j++) {
+            if(i != j) {
+                if(cabeza[i].valor_hash == cabeza[j].valor_hash) {
+                    duplicados[cont] = cabeza[j].nombre_archivo;
+                    cont++;
+                }
+            }
+        }
+    }
+}
+
+/*Funcion para obtener los hash*/
+void obtener_hashes(char modo) {
+    struct Nodo_visitados *actual = cabeza;
+    if(modo == 'l') {
+        while (actual != NULL) {
+            MDFile (actual->nombre_archivo, actual->valor_hash);
+            actual = actual->siguiente;
+        }
+    }
+}
 
 /*Funcion para apilar*/
 void push(char* nombre){

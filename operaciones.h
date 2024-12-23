@@ -3,7 +3,6 @@
 
 #include "estructuras.h"
 #include <stdlib.h>
-#include <stdio.h>
 
 /***********************OPERACIONES PARA LAS ESTRUCTURAS***********************/
 //INSERTAR ELEMENTO EN LA PILA
@@ -23,6 +22,9 @@ void liberar_lista();
 
 //IMPRIMIR LA PILA
 void imprimir_pila();
+
+void comparar_hash();
+void obtener_hashes(char modo);
 
 /******************************************************************************/
 
