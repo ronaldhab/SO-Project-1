@@ -4,7 +4,6 @@
 #include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "argumentos.h"
 
 int es_directorio_valido(const char *ruta) {
     struct stat info;
