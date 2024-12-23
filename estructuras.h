@@ -14,6 +14,6 @@ struct Nodo_visitados{
     char* nombre_archivo;
     char valor_hash[33];
     struct Nodo_visitados *siguiente;
-};
+} *cabeza;
 
 #endif
