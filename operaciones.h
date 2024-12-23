@@ -21,6 +21,7 @@ void insertar_visitados(char* nombre, char codigo[33]);
 //BORRAR LA LISTA
 void liberar_lista();
 
+//IMPRIMIR LA PILA
 void imprimir_pila();
 
 /******************************************************************************/

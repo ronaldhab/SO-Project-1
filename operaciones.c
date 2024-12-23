@@ -1,22 +1,23 @@
 #define _DEFAULT_SOURCE
+#include <dirent.h>
 #include <stdlib.h>
 #include <stdio.h>
-#include <dirent.h>
 #include <string.h>
 #include "estructuras.h"
 
 struct Nodo *tope_pila = NULL;
 struct Nodo_visitados *cabeza = NULL;
 
-//APILAR ARCHIVOS
+/*Funcion para apilar*/
 void push(char* nombre){
     struct Nodo *nuevo;
     nuevo = malloc(sizeof(struct Nodo));
-    //printf("El nombre del archivo es: %s\n", nombre);
+    
+    //Inicializamos el nuevo nodo
     nuevo->nombre_archivo = (char*)malloc(NAME_MAX);
     strcpy(nuevo->nombre_archivo, nombre);
 
-    if(tope_pila == NULL){
+    if(tope_pila == NULL){ 
         tope_pila = nuevo;
         nuevo->siguiente = NULL;
 
@@ -24,13 +25,9 @@ void push(char* nombre){
         nuevo->siguiente = tope_pila;
         tope_pila = nuevo;
     }
-
-   // imprimir_pila();
-    //printf("\n");
-
 }
 
-//DESAPILAR ARCHIVOS
+/*Funcion para desapilar*/
 char* pop(){
 
     char* nombre = tope_pila->nombre_archivo;
@@ -41,7 +38,6 @@ char* pop(){
 
 }
 
-//BORRAR LA PILA
 void liberar_pila(){
     struct Nodo *aux = tope_pila;
     struct Nodo *borrado;
@@ -52,7 +48,6 @@ void liberar_pila(){
     }
 }
 
-//INSERTAR NODO EN LA LISTA 
 void insertar_visitados(char* nombre, char codigo[33]){
 
     struct Nodo_visitados *nuevo;
@@ -71,7 +66,6 @@ void insertar_visitados(char* nombre, char codigo[33]){
 
 }
 
-//BORRAR LA LISTA
 void liberar_lista(){
     struct Nodo_visitados *aux = cabeza;
     struct Nodo_visitados *borrado;
