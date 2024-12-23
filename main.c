@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include "argumentos.h"
-#include "estructuras.h"
+#include "operaciones.h"
 #include <string.h>
 
 
