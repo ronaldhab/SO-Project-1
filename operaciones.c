@@ -6,7 +6,7 @@
 #include "estructuras.h"
 
 struct Nodo *tope_pila = NULL;
-struct Nodo_visitados *cabeza = NULL;
+// struct Nodo_visitados *cabeza = NULL;
 
 /*Funcion para apilar*/
 void push(char* nombre){
