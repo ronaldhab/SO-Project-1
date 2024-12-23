@@ -47,14 +47,3 @@ void explora_dir(const char *directorio){
     }
     closedir(carpeta);
 }
-
-int main(){
-    
-    char* dir = "/home/ronald/Desktop/ProofCode";
-    explora_dir(dir);
-
-    imprimir_pila();
-    liberar_pila();
-
-    return 0;
-}
