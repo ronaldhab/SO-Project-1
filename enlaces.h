@@ -1,1 +1,0 @@
-void identificar_enlaces_simbolicos(const char *directorio);
