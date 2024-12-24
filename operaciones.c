@@ -2,8 +2,15 @@
 #include <dirent.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <errno.h>
 // #include "md5-lib/md5.h"
 #include "operaciones.h"
+
+#define READ 0
+#define WRITE 1
+
 
 struct Nodo *tope_pila = NULL;
 struct Nodo_visitados *cabeza = NULL;
@@ -52,50 +59,31 @@ void comparar_hash(char* archivo, char hash[33]) {
 
 void obtener_hashes_exec() {
     struct Nodo_visitados *actual = cabeza;
-    int pipefd[2];
+    int fd[2];
     pid_t pid;
 
-    // Crear la tubería
-    pipe(pipefd);
-
-    // Crear el proceso hijo
-    pid = fork();
-
-    if (pid == -1) {
-        // Error al crear el proceso hijo
-        perror("fork");
+    if (pipe(fd) == -1) {
+        perror("pipe");
         exit(1);
     }
 
-    while(actual != NULL) {
-        if (pid == 0) { // Proceso hijo
-            // Cerrar el extremo de lectura de la tubería
-            close(pipefd[0]);
+    pid = fork();
 
-            // Redireccionar la salida estándar del programa de cálculo de hash a la tubería
-            // dup2(pipefd[1], STDOUT_FILENO);
-            close(pipefd[1]);
 
-            // Ejecutar el programa de cálculo de hash
-            execl("md5-app/md5", actual->nombre_archivo, NULL);
+    if (pid == 0) {  // Proceso Hijo
+        printf("El pid es: %d\n", pid);
 
-            // Si execl falla, imprimir un mensaje de error
-            perror("execl");
-            exit(1);
-        } else { // Proceso padre
-            // Cerrar el extremo de escritura de la tubería
-            close(pipefd[1]);
+        close(fd[READ]);  //Cerrar extremo de lectura
 
-            // Leer el hash desde la tubería
-            char hash[33]; // Suponiendo un hash MD5 de 32 caracteres
-            read(pipefd[0], hash, 33);
+        dup2(fd[WRITE], STDOUT_FILENO);
+        close(fd[WRITE]);
 
-            // Imprimir o usar el hash como necesites
-            printf("El hash es: %s\n", hash);
-
-            // Esperar a que termine el proceso hijo
-            wait(NULL);
-        }
+        execlp("md5-app/md5", "./md5", actual->nombre_archivo, actual->valor_hash, NULL);
+    }
+    else {
+        close(fd[WRITE]);
+        read(fd[READ], actual->valor_hash, 33);
+        // printf("El hash es: %s\n", actual->valor_hash);
     }
 }
 
