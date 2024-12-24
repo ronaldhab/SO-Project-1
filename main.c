@@ -6,6 +6,6 @@
 int main(int argc, char *argv[]) {
     // identificar_argumentos(argc, argv);
     char *directorio = argv[4];
-    obtener_hashes('l');
+    insertar_visitados("Juancito", "1234567890");
     return 0;
 }
