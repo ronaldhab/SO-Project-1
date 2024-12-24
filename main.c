@@ -10,7 +10,7 @@ int main(int argc, char *argv[]) {
     
     explora_dir(".");
 
-    runner();
+    runner('l');
 
     imprimir_lista();
     imprimir_lista_duplicados();

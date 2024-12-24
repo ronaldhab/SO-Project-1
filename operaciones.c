@@ -5,7 +5,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <errno.h>
-// #include "md5-lib/md5.h"
+#include "md5-lib/md5c.c"
 #include "operaciones.h"
 
 #define READ 0
@@ -33,31 +33,21 @@ void comparar_hash(char* archivo, char hash[33]) {
         aux = aux->siguiente;
     }
 }
-/*
-    for(int i = 0; i < (strlen(cabeza) + 1); i++) {
-        for(int j = 0; j < (strlen(cabeza) + 1); j++) {
-            if(i != j) {
-                if(cabeza[i].valor_hash == cabeza[j].valor_hash) {
-                    duplicados[cont] = cabeza[j].nombre_archivo;
-                    cont++;
-                }
-            }
-        }
-    }
-*/
-
 
 /*Funcion para obtener los hash*/
-// void obtener_hashes_libreria() {
-//     struct Nodo_visitados *actual = cabeza;
-//     while (actual != NULL) {
-//         MDFile (actual->nombre_archivo, actual->valor_hash);
-//         actual = actual->siguiente;
-//     }
-// }
+void obtener_hashes_libreria(char* nombre_archivo) {
+   
+    char hash_code[33] = { 0 };
+
+    MDFile(nombre_archivo, hash_code);
+
+    comparar_hash(nombre_archivo, hash_code);
+    insertar_visitados(nombre_archivo, hash_code);
+
+}
 
 void obtener_hashes_exec(char* nombre_archivo) {
-    char hash_code[33];
+    char hash_code[33] = { 0 };
     pid_t pid;
     int fd[2];
     
@@ -88,12 +78,18 @@ void obtener_hashes_exec(char* nombre_archivo) {
 }
 
 /*FUNCION PROVISIONAL PARA CORRER obtener_hashes_exec*/
-void runner(){
+void runner(char modo){
     struct Nodo* stack_runner = tope_pila;
 
     while (stack_runner!=NULL)
     {
-        obtener_hashes_exec(stack_runner->nombre_archivo);
+        if(modo == 'e'){
+            obtener_hashes_exec(stack_runner->nombre_archivo);
+        }else 
+            if(modo == 'l'){
+                obtener_hashes_libreria(stack_runner->nombre_archivo);
+        }
+        
         stack_runner = stack_runner->siguiente;
     }
 }

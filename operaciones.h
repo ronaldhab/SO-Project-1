@@ -30,9 +30,13 @@ void imprimir_lista();
 void imprimir_lista_duplicados();
 
 void comparar_hash(char* archivo, char hash[33]);
-void obtener_hashes_libreria();
+
+//FUNCIONES PARA OBTENER LOS HASHES
+void obtener_hashes_libreria(char* nombre_archivo);
 void obtener_hashes_exec(char* nombre_archivo);
-void runner();
+
+//PROVISIONAL
+void runner(char modo);
 
 /******************************************************************************/
 
