@@ -1,8 +1,16 @@
 #define _DEFAULT_SOURCE
 #include <dirent.h>
 #include <string.h>
-#include "md5-lib/md5.h"
+#include <unistd.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <errno.h>
+// #include "md5-lib/md5.h"
 #include "operaciones.h"
+
+#define READ 0
+#define WRITE 1
+
 
 struct Nodo *tope_pila = NULL;
 struct Nodo_visitados *cabeza = NULL;
@@ -41,12 +49,43 @@ void comparar_hash(char* archivo, char hash[33]) {
 
 
 /*Funcion para obtener los hash*/
-void obtener_hashes(char modo) {
+// void obtener_hashes_libreria() {
+//     struct Nodo_visitados *actual = cabeza;
+//     while (actual != NULL) {
+//         MDFile (actual->nombre_archivo, actual->valor_hash);
+//         actual = actual->siguiente;
+//     }
+// }
+
+void obtener_hashes_exec() {
     struct Nodo_visitados *actual = cabeza;
-    if(modo == 'l') {
-        while (actual != NULL) {
-            MDFile (actual->nombre_archivo, actual->valor_hash);
+    int fd[2];
+
+    if (pipe(fd) == -1) {
+        perror("pipe");
+        exit(1);
+    }
+
+    while(actual != NULL) {
+        pid_t pid;
+        pid = fork();
+        if (pid == 0) {  // Proceso Hijo
+            // printf("El pid es: %d\n", pid);
+
+            close(fd[READ]);  //Cerrar extremo de lectura
+
+            dup2(fd[WRITE], STDOUT_FILENO);
+            close(fd[WRITE]);
+
+
+            execlp("md5-app/md5", "./md5", actual->nombre_archivo, actual->valor_hash, NULL);
+        }
+        else {
+            close(fd[WRITE]);
+            read(fd[READ], actual->valor_hash, 33);
+            comparar_hash(actual->nombre_archivo, actual->valor_hash);
             actual = actual->siguiente;
+            wait(NULL);
         }
     }
 }
