@@ -24,7 +24,7 @@ void insertar_duplicados(char* archivo, char* duplicado);
 void liberar_lista();
 void liberar_lista_duplicados();
 
-//IMPRIMIR LA PILA
+//IMPRIMIR ESTRUCTURAS
 void imprimir_pila();
 void imprimir_lista();
 void imprimir_lista_duplicados();

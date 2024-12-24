@@ -2,6 +2,7 @@
 #include <string.h>
 // #include "argumentos.h"
 #include "operaciones.h"
+#include "explora_dir.h"
 
 int main(int argc, char *argv[]) {
     // identificar_argumentos(argc, argv);
