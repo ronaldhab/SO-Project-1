@@ -1,5 +1,5 @@
 TARGET = main
-SRC = explora_dir.c operaciones.c 
+SRC = operaciones.c main.c explora_dir.c 
 OBJ = $(SRC:.c=.o)
 INCLUDE = estructuras.h operaciones.h
 CC = gcc
@@ -12,6 +12,6 @@ $(TARGET): $(OBJ)
 %.o: %.c $(INCLUDE)
 	$(CC) -c -o $@ $< 
 
-.PHONY: clear
-clear:
+.PHONY: clean
+clean:
 	@rm -f *.o $(TARGET)
