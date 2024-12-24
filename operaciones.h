@@ -26,7 +26,8 @@ void liberar_lista();
 //IMPRIMIR LA PILA
 void imprimir_pila();
 
-void comparar_hash();
+//COMPARAR LOS CODIGOS HASH EN LA LISTA DE VISITADOS
+void comparar_hash(char* archivo, char hash[33]);
 void obtener_hashes_libreria();
 void obtener_hashes_exec();
 
