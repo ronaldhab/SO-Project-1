@@ -60,7 +60,6 @@ void comparar_hash(char* archivo, char hash[33]) {
 void obtener_hashes_exec() {
     struct Nodo_visitados *actual = cabeza;
     int fd[2];
-    pid_t pid;
 
     if (pipe(fd) == -1) {
         perror("pipe");
@@ -68,9 +67,10 @@ void obtener_hashes_exec() {
     }
 
     while(actual != NULL) {
-    pid = fork();
+        pid_t pid;
+        pid = fork();
         if (pid == 0) {  // Proceso Hijo
-            printf("El pid es: %d\n", pid);
+            // printf("El pid es: %d\n", pid);
 
             close(fd[READ]);  //Cerrar extremo de lectura
 
@@ -83,17 +83,9 @@ void obtener_hashes_exec() {
         else {
             close(fd[WRITE]);
             read(fd[READ], actual->valor_hash, 33);
-            insertar_visitados(actual->nombre_archivo, actual->valor_hash);
-            printf("El hash es: %s\n", actual->valor_hash);
+            comparar_hash(actual->nombre_archivo, actual->valor_hash);
             actual = actual->siguiente;
             wait(NULL);
-            // printf("El hash es: %s\n", cabeza->valor_hash);
-        }
-
-        int status;
-        if (waitpid(pid, &status, 0) == -1) {
-            perror("waitpid");
-            exit(1);
         }
     }
 }
