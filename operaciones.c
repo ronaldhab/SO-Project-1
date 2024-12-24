@@ -111,6 +111,7 @@ void insertar_visitados(char* nombre, char codigo[33]){
 
 void insertar_duplicados(char* nombre, char* nombre_duplicado){
 
+    int insertado = 0;
     struct Nodo_duplicados *nuevo;
     nuevo = malloc(sizeof(struct Nodo_duplicados));
 
@@ -124,10 +125,22 @@ void insertar_duplicados(char* nombre, char* nombre_duplicado){
         duplicados = nuevo;
         nuevo->siguiente = NULL;
     }else{
-        nuevo->siguiente = duplicados;
-        duplicados = nuevo;
-    }
+        struct Nodo_duplicados *aux = duplicados;
 
+        while(aux!= NULL && !insertado){ 
+            if(strcmp(aux->archivo, nombre)){
+                nuevo->siguiente = aux->siguiente;
+                aux->siguiente = nuevo;
+
+                insertado = 1;
+            }
+        }
+        
+        if(!insertado){
+            nuevo->siguiente = duplicados;
+            duplicados = nuevo;
+        }
+    }
 }
 
 void liberar_lista(){
