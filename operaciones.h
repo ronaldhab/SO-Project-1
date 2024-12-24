@@ -27,7 +27,8 @@ void liberar_lista();
 void imprimir_pila();
 
 void comparar_hash();
-void obtener_hashes(char modo);
+void obtener_hashes_libreria();
+void obtener_hashes_exec();
 
 /******************************************************************************/
 
