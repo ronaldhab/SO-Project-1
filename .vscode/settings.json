@@ -2,6 +2,12 @@
     "files.associations": {
         "dirent.h": "c",
         "estructuras.h": "c",
-        "stdlib.h": "c"
+        "stdlib.h": "c",
+        "string": "c",
+        "vector": "c",
+        "memory": "c",
+        "optional": "c",
+        "string_view": "c",
+        "system_error": "c"
     }
 }
