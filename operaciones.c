@@ -1,7 +1,8 @@
 #define _DEFAULT_SOURCE
 #include <dirent.h>
 #include <string.h>
-#include "md5-lib/md5.h"
+#include <unistd.h>
+// #include "md5-lib/md5.h"
 #include "operaciones.h"
 
 struct Nodo *tope_pila = NULL;
@@ -41,12 +42,59 @@ void comparar_hash(char* archivo, char hash[33]) {
 
 
 /*Funcion para obtener los hash*/
-void obtener_hashes(char modo) {
+// void obtener_hashes_libreria() {
+//     struct Nodo_visitados *actual = cabeza;
+//     while (actual != NULL) {
+//         MDFile (actual->nombre_archivo, actual->valor_hash);
+//         actual = actual->siguiente;
+//     }
+// }
+
+void obtener_hashes_exec() {
     struct Nodo_visitados *actual = cabeza;
-    if(modo == 'l') {
-        while (actual != NULL) {
-            MDFile (actual->nombre_archivo, actual->valor_hash);
-            actual = actual->siguiente;
+    int pipefd[2];
+    pid_t pid;
+
+    // Crear la tubería
+    pipe(pipefd);
+
+    // Crear el proceso hijo
+    pid = fork();
+
+    if (pid == -1) {
+        // Error al crear el proceso hijo
+        perror("fork");
+        exit(1);
+    }
+
+    while(actual != NULL) {
+        if (pid == 0) { // Proceso hijo
+            // Cerrar el extremo de lectura de la tubería
+            close(pipefd[0]);
+
+            // Redireccionar la salida estándar del programa de cálculo de hash a la tubería
+            // dup2(pipefd[1], STDOUT_FILENO);
+            close(pipefd[1]);
+
+            // Ejecutar el programa de cálculo de hash
+            execl("md5-app/md5", actual->nombre_archivo, NULL);
+
+            // Si execl falla, imprimir un mensaje de error
+            perror("execl");
+            exit(1);
+        } else { // Proceso padre
+            // Cerrar el extremo de escritura de la tubería
+            close(pipefd[1]);
+
+            // Leer el hash desde la tubería
+            char hash[33]; // Suponiendo un hash MD5 de 32 caracteres
+            read(pipefd[0], hash, 33);
+
+            // Imprimir o usar el hash como necesites
+            printf("El hash es: %s\n", hash);
+
+            // Esperar a que termine el proceso hijo
+            wait(NULL);
         }
     }
 }
