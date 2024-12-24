@@ -69,21 +69,25 @@ void obtener_hashes_exec() {
 
     pid = fork();
 
+    while(actual != NULL) {
+        if (pid == 0) {  // Proceso Hijo
+            // printf("El pid es: %d\n", pid);
 
-    if (pid == 0) {  // Proceso Hijo
-        printf("El pid es: %d\n", pid);
+            close(fd[READ]);  //Cerrar extremo de lectura
 
-        close(fd[READ]);  //Cerrar extremo de lectura
+            dup2(fd[WRITE], STDOUT_FILENO);
+            close(fd[WRITE]);
 
-        dup2(fd[WRITE], STDOUT_FILENO);
-        close(fd[WRITE]);
 
-        execlp("md5-app/md5", "./md5", actual->nombre_archivo, actual->valor_hash, NULL);
-    }
-    else {
-        close(fd[WRITE]);
-        read(fd[READ], actual->valor_hash, 33);
-        // printf("El hash es: %s\n", actual->valor_hash);
+            execlp("md5-app/md5", "./md5", actual->nombre_archivo, actual->valor_hash, NULL);
+        }
+        else {
+            close(fd[WRITE]);
+            read(fd[READ], actual->valor_hash, 33);
+            insertar_visitados(actual->nombre_archivo, actual->valor_hash);
+            actual = actual->siguiente;
+            printf("El hash es: %s\n", cabeza->valor_hash);
+        }
     }
 }
 
