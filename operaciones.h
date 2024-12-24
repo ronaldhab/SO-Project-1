@@ -17,6 +17,9 @@ void liberar_pila();
 //INSERTAR NODO EN LA LISTA 
 void insertar_visitados(char* nombre, char codigo[33]);
 
+//INSERTAR NODO EN LA LISTA DE DUPLICADOS
+void insertar_duplicados(char* archivo, char* duplicado);
+
 //BORRAR LA LISTA
 void liberar_lista();
 

@@ -16,4 +16,11 @@ struct Nodo_visitados{
     struct Nodo_visitados *siguiente;
 };
 
+//Estructura de datos de tipo lista, que contendra los archivos y sus duplicados
+struct Nodo_duplicados{
+    char* archivo;
+    char* duplicado;
+    struct Nodo_duplicados *siguiente;
+};
+
 #endif

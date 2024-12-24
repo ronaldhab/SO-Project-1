@@ -6,11 +6,27 @@
 
 struct Nodo *tope_pila = NULL;
 struct Nodo_visitados *cabeza = NULL;
-char *duplicados[];
+struct Nodo_duplicados *duplicados = NULL;
+
+//char *duplicados[];
 
 /*Funcion para comparar los hash*/
-void comparar_hash() {
+void comparar_hash(char* archivo, char hash[33]) {
     int cont = 0;
+    struct Nodo_visitados *aux = cabeza; 
+    int es_duplicado = 0;
+
+    while(aux != NULL && !es_duplicado){
+
+        if(strcmp(aux->valor_hash, hash)){
+            es_duplicado = 1;
+            insertar_duplicados(aux->nombre_archivo, archivo);
+        }
+        aux = aux->siguiente;
+    }
+    insertar_visitados(archivo, hash);
+}
+/*
     for(int i = 0; i < (strlen(cabeza) + 1); i++) {
         for(int j = 0; j < (strlen(cabeza) + 1); j++) {
             if(i != j) {
@@ -21,7 +37,8 @@ void comparar_hash() {
             }
         }
     }
-}
+*/
+
 
 /*Funcion para obtener los hash*/
 void obtener_hashes(char modo) {
@@ -77,7 +94,7 @@ void liberar_pila(){
 void insertar_visitados(char* nombre, char codigo[33]){
 
     struct Nodo_visitados *nuevo;
-    nuevo = malloc(sizeof(struct Nodo));
+    nuevo = malloc(sizeof(struct Nodo_visitados));
     nuevo->nombre_archivo = nombre;
 
     strcpy(nuevo->valor_hash, codigo);
@@ -88,6 +105,27 @@ void insertar_visitados(char* nombre, char codigo[33]){
     }else{
         nuevo->siguiente = cabeza;
         cabeza = nuevo;
+    }
+
+}
+
+void insertar_duplicados(char* nombre, char* nombre_duplicado){
+
+    struct Nodo_duplicados *nuevo;
+    nuevo = malloc(sizeof(struct Nodo_duplicados));
+
+    //Inicializamos cada uno de los campos del nuevo nodo
+    nuevo->archivo = (char*)malloc(NAME_MAX);
+    nuevo->duplicado = (char*)malloc(NAME_MAX);
+    strcpy(nuevo->archivo, nombre);
+    strcpy(nuevo->duplicado, nombre_duplicado);
+    
+    if(duplicados == NULL){
+        duplicados = nuevo;
+        nuevo->siguiente = NULL;
+    }else{
+        nuevo->siguiente = duplicados;
+        duplicados = nuevo;
     }
 
 }
