@@ -22,13 +22,17 @@ void insertar_duplicados(char* archivo, char* duplicado);
 
 //BORRAR LA LISTA
 void liberar_lista();
+void liberar_lista_duplicados();
 
 //IMPRIMIR LA PILA
 void imprimir_pila();
+void imprimir_lista();
+void imprimir_lista_duplicados();
 
-void comparar_hash();
+void comparar_hash(char* archivo, char hash[33]);
 void obtener_hashes_libreria();
-void obtener_hashes_exec();
+void obtener_hashes_exec(char* nombre_archivo);
+void runner();
 
 /******************************************************************************/
 

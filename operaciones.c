@@ -26,13 +26,12 @@ void comparar_hash(char* archivo, char hash[33]) {
 
     while(aux != NULL && !es_duplicado){
 
-        if(strcmp(aux->valor_hash, hash)){
+        if(strcmp(aux->valor_hash, hash) == 0){
             es_duplicado = 1;
             insertar_duplicados(aux->nombre_archivo, archivo);
         }
         aux = aux->siguiente;
     }
-    insertar_visitados(archivo, hash);
 }
 /*
     for(int i = 0; i < (strlen(cabeza) + 1); i++) {
@@ -57,36 +56,45 @@ void comparar_hash(char* archivo, char hash[33]) {
 //     }
 // }
 
-void obtener_hashes_exec() {
-    struct Nodo_visitados *actual = cabeza;
+void obtener_hashes_exec(char* nombre_archivo) {
+    char hash_code[33];
+    pid_t pid;
     int fd[2];
-
+    
     if (pipe(fd) == -1) {
         perror("pipe");
         exit(1);
     }
+    
+    pid = fork();
 
-    while(actual != NULL) {
-        pid_t pid;
-        pid = fork();
-        if (pid == 0) {  // Proceso Hijo
-            // printf("El pid es: %d\n", pid);
+    if (pid == 0) {  // Proceso Hijo
 
-            close(fd[READ]);  //Cerrar extremo de lectura
+        close(fd[READ]);  //Cerrar extremo de lectura
 
-            dup2(fd[WRITE], STDOUT_FILENO);
-            close(fd[WRITE]);
+        dup2(fd[WRITE], STDOUT_FILENO);
+        close(fd[WRITE]);
 
+        execlp("md5-app/md5", "./md5", nombre_archivo, NULL);    
+    }
+    else{
+        close(fd[WRITE]);
+        
+        read(fd[READ], hash_code, 33);
 
-            execlp("md5-app/md5", "./md5", actual->nombre_archivo, actual->valor_hash, NULL);
-        }
-        else {
-            close(fd[WRITE]);
-            read(fd[READ], actual->valor_hash, 33);
-            comparar_hash(actual->nombre_archivo, actual->valor_hash);
-            actual = actual->siguiente;
-            wait(NULL);
-        }
+        comparar_hash(nombre_archivo, hash_code);
+        insertar_visitados(nombre_archivo, hash_code);
+    }
+}
+
+/*FUNCION PROVISIONAL PARA CORRER obtener_hashes_exec*/
+void runner(){
+    struct Nodo* stack_runner = tope_pila;
+
+    while (stack_runner!=NULL)
+    {
+        obtener_hashes_exec(stack_runner->nombre_archivo);
+        stack_runner = stack_runner->siguiente;
     }
 }
 
@@ -134,8 +142,8 @@ void insertar_visitados(char* nombre, char codigo[33]){
 
     struct Nodo_visitados *nuevo;
     nuevo = malloc(sizeof(struct Nodo_visitados));
-    nuevo->nombre_archivo = nombre;
-
+    nuevo->nombre_archivo = (char*)malloc(NAME_MAX);
+    strcpy(nuevo->nombre_archivo, nombre);
     strcpy(nuevo->valor_hash, codigo);
     
     if(cabeza == NULL){
@@ -179,11 +187,55 @@ void liberar_lista(){
     }
 }
 
-void imprimir_pila(){
-    struct Nodo *impreso = tope_pila; 
+void liberar_lista_duplicados(){
+    struct Nodo_duplicados *aux = duplicados;
+    struct Nodo_duplicados *borrado;
+    while(aux!=NULL){
+        borrado = aux;
+        aux = aux->siguiente;
+        free(borrado);
+    }
+}
+
+void imprimir_pila(){ 
+
+    struct Nodo *impreso = tope_pila;
+    
     while(impreso != NULL){
 
         printf("%s\n", impreso->nombre_archivo);
+        impreso = impreso->siguiente;
+    }
+}
+
+void imprimir_lista(){ 
+
+    struct Nodo_visitados *impreso = cabeza;
+    
+    while(impreso != NULL){
+
+        printf("-------------------------------------------------\n");
+        printf("%s\n", impreso->nombre_archivo);
+        printf("%s", impreso->valor_hash);
+        printf("-------------------------------------------------\n\n");
+
+        impreso = impreso->siguiente;
+    }
+}
+
+void imprimir_lista_duplicados(){ 
+
+    struct Nodo_duplicados *impreso = duplicados;
+    
+    printf("\n*****************LISTA DE DUPLICADOS*************************\n\n\n");
+
+    while(impreso != NULL){
+
+        printf("-------------------------------------------------\n");
+        printf("%s\n", impreso->archivo);
+        printf("%s\n", impreso->duplicado);
+        printf("--------------------------------------------------\n\n");
+
         impreso = impreso->siguiente;
     }
 }
