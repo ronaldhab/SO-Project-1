@@ -23,4 +23,9 @@ struct Nodo_duplicados{
     struct Nodo_duplicados *siguiente;
 };
 
+//Apuntadores de las estructuras
+struct Nodo *tope_pila = NULL;
+struct Nodo_visitados *cabeza = NULL;
+struct Nodo_duplicados *duplicados = NULL;
+
 #endif

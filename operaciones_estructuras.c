@@ -2,21 +2,12 @@
 #include <dirent.h>
 #include <string.h>
 #include <unistd.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <errno.h>
-#include "md5-lib/md5c.c"
-#include "operaciones.h"
+#include "operaciones_estructuras.h"
+#include "estructuras.h"
+#include "obtener_hashes.h"
 
 #define READ 0
 #define WRITE 1
-
-
-struct Nodo *tope_pila = NULL;
-struct Nodo_visitados *cabeza = NULL;
-struct Nodo_duplicados *duplicados = NULL;
-
-//char *duplicados[];
 
 /*Funcion para comparar los hash*/
 void comparar_hash(char* archivo, char hash[33]) {
@@ -34,50 +25,7 @@ void comparar_hash(char* archivo, char hash[33]) {
     }
 }
 
-/*Funcion para obtener los hash*/
-void obtener_hashes_libreria(char* nombre_archivo) {
-   
-    char hash_code[33] = { 0 };
-
-    MDFile(nombre_archivo, hash_code);
-
-    comparar_hash(nombre_archivo, hash_code);
-    insertar_visitados(nombre_archivo, hash_code);
-
-}
-
-void obtener_hashes_exec(char* nombre_archivo) {
-    char hash_code[33] = { 0 };
-    pid_t pid;
-    int fd[2];
-    
-    if (pipe(fd) == -1) {
-        perror("pipe");
-        exit(1);
-    }
-    
-    pid = fork();
-
-    if (pid == 0) {  // Proceso Hijo
-
-        close(fd[READ]);  //Cerrar extremo de lectura
-
-        dup2(fd[WRITE], STDOUT_FILENO);
-        close(fd[WRITE]);
-
-        execlp("md5-app/md5", "./md5", nombre_archivo, NULL);    
-    }
-    else{
-        close(fd[WRITE]);
-        
-        read(fd[READ], hash_code, 33);
-
-        comparar_hash(nombre_archivo, hash_code);
-        insertar_visitados(nombre_archivo, hash_code);
-    }
-}
-
-/*FUNCION PROVISIONAL PARA CORRER obtener_hashes_exec*/
+/*FUNCION PROVISIONAL PARA CORRER obtener_hashes*/
 void runner(char modo){
     struct Nodo* stack_runner = tope_pila;
 

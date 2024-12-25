@@ -1,7 +1,7 @@
 #ifndef operaciones_h
 #define operaciones_h
 
-#include "estructuras.h"
+//#include "estructuras.h"
 #include <stdlib.h>
 
 /***********************OPERACIONES PARA LAS ESTRUCTURAS***********************/
@@ -30,10 +30,6 @@ void imprimir_lista();
 void imprimir_lista_duplicados();
 
 void comparar_hash(char* archivo, char hash[33]);
-
-//FUNCIONES PARA OBTENER LOS HASHES
-void obtener_hashes_libreria(char* nombre_archivo);
-void obtener_hashes_exec(char* nombre_archivo);
 
 //PROVISIONAL
 void runner(char modo);

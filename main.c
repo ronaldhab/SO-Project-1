@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <string.h>
 // #include "argumentos.h"
-#include "operaciones.h"
+#include "operaciones_estructuras.h"
 #include "explora_dir.h"
 
 int main(int argc, char *argv[]) {

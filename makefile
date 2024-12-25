@@ -1,7 +1,7 @@
 TARGET = main
-SRC = operaciones.c main.c explora_dir.c 
+SRC = operaciones_estructuras.c obtener_hashes.c main.c explora_dir.c 
 OBJ = $(SRC:.c=.o)
-INCLUDE = estructuras.h operaciones.h
+INCLUDE = estructuras.h operaciones_estructuras.h obtener_hashes.h explora_dir.h 
 CC = gcc
 
 all: $(TARGET)

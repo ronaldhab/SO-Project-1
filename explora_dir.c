@@ -3,7 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "operaciones.h"
+#include "operaciones_estructuras.h"
 
 /*Contador provisional*/
 int count = 0;
