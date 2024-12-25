@@ -1,8 +1,10 @@
 #include <stdio.h>
 #include <string.h>
+#include <pthread.h>
 // #include "argumentos.h"
 #include "operaciones_estructuras.h"
 #include "explora_dir.h"
+#include "estructuras.h"
 
 int main(int argc, char *argv[]) {
     // identificar_argumentos(argc, argv);
@@ -14,6 +16,8 @@ int main(int argc, char *argv[]) {
 
     imprimir_lista();
     imprimir_lista_duplicados();
+
+    struct Nodo *aux = tope_pila;
 
     liberar_lista();
     liberar_pila();

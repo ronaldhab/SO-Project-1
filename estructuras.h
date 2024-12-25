@@ -1,5 +1,5 @@
-#ifndef estructuras_h
-#define estructuras_h
+#ifndef _ESTRUCTURAS_H_
+#define _ESTRUCTURAS_H_ 
 
 #include <stdio.h>
 
@@ -24,8 +24,8 @@ struct Nodo_duplicados{
 };
 
 //Apuntadores de las estructuras
-struct Nodo *tope_pila = NULL;
-struct Nodo_visitados *cabeza = NULL;
-struct Nodo_duplicados *duplicados = NULL;
+extern struct Nodo *tope_pila;
+extern struct Nodo_visitados *cabeza;
+extern struct Nodo_duplicados *duplicados;
 
-#endif
+#endif 

@@ -9,6 +9,11 @@
 #define READ 0
 #define WRITE 1
 
+//Apuntadores de las estructuras
+struct Nodo *tope_pila = NULL;
+struct Nodo_visitados *cabeza = NULL;
+struct Nodo_duplicados *duplicados = NULL;
+
 /*Funcion para comparar los hash*/
 void comparar_hash(char* archivo, char hash[33]) {
     int cont = 0;
