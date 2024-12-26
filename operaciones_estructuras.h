@@ -1,7 +1,6 @@
 #ifndef _OPERACIONES_H_
 #define _OPERACIONES_H_
 
-//#include "estructuras.h"
 #include <stdlib.h>
 
 /***********************OPERACIONES PARA LAS ESTRUCTURAS***********************/

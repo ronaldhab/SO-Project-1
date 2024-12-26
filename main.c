@@ -12,12 +12,10 @@ int main(int argc, char *argv[]) {
     
     explora_dir(".");
 
-    runner('l');
+    runner('e');
 
     imprimir_lista();
     imprimir_lista_duplicados();
-
-    struct Nodo *aux = tope_pila;
 
     liberar_lista();
     liberar_pila();

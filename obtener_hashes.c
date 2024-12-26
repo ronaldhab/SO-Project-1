@@ -34,17 +34,15 @@ void obtener_hashes_exec(char* nombre_archivo) {
 
     if (pid == 0) {  // Proceso Hijo
 
-        close(fd[READ]);  //Cerrar extremo de lectura
-
         dup2(fd[WRITE], STDOUT_FILENO);
         close(fd[WRITE]);
 
         execlp("md5-app/md5", "./md5", nombre_archivo, NULL);    
     }
     else{
-        close(fd[WRITE]);
         
         read(fd[READ], hash_code, 33);
+        close(fd[READ]);
 
         comparar_hash(nombre_archivo, hash_code);
         insertar_visitados(nombre_archivo, hash_code);
