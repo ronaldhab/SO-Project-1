@@ -74,7 +74,10 @@ void crear_hilos(int cant, char* dir, char hash_modo) {
 
     for(i = 0; i < (cant - resto)/2; i++) {
         
-
+        // REVISAR
+        // Algo me dice que la logica de aqui no esta aplicada del todo bien
+        // fijate que puedes crear un hilo, por ejemplo, hilo 1 para explorar directorios e hilo 1 para codificar hash
+        // No se si es que, al crear el explorar directorios, da fallos cuando intente crear codificar hash y por eso esta asi
         if(pthread_create(hilos + i, NULL, &explora_directorios, directorio) != 0) {
             perror("Error al crear el hilo");
             exit(1);
@@ -84,6 +87,7 @@ void crear_hilos(int cant, char* dir, char hash_modo) {
             exit(1);
         } 
     }
+
     if(pthread_create(hilos + i, NULL, &compara_hashes, NULL) != 0) {
         perror("Error al crear el hilo");
         exit(1);
