@@ -195,9 +195,9 @@ void imprimir_lista_duplicados(){
     while(impreso != NULL){
 
         printf("-------------------------------------------------\n");
+        printf("%s, es duplicado de ", impreso->duplicado);
         printf("%s\n", impreso->archivo);
-        printf("%s\n", impreso->duplicado);
-        printf("--------------------------------------------------\n\n");
+        printf("-------------------------------------------------\n\n");
 
         impreso = impreso->siguiente;
     }
