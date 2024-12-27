@@ -8,7 +8,10 @@
 void push(char* nombre);
 
 //SACAR ELEMENTO DE LA PILA
-char* pop();
+void pop();
+
+//VERIFICAR SI UN ELEMENTO SE ENCUENTRA EN LA PILA
+int esta_contenido(char* nombre);
 
 //BORRAR LA PILA
 void liberar_pila();

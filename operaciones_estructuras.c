@@ -17,7 +17,7 @@ struct Nodo_duplicados *duplicados = NULL;
 /*Funcion para comparar los hash*/
 void comparar_hash(char* archivo, char hash[33]) {
     int cont = 0;
-    struct Nodo_visitados *aux = cabeza; 
+    struct Nodo_visitados *aux = cabeza->siguiente; 
     int es_duplicado = 0;
 
     while(aux != NULL && !es_duplicado){
@@ -34,16 +34,18 @@ void comparar_hash(char* archivo, char hash[33]) {
 void runner(char modo){
     struct Nodo* stack_runner = tope_pila;
 
-    while (stack_runner!=NULL)
+    while (tope_pila!=NULL)
     {
         if(modo == 'e'){
-            obtener_hashes_exec(stack_runner->nombre_archivo);
+            obtener_hashes_exec(tope_pila->nombre_archivo);
+            pop();
         }else 
             if(modo == 'l'){
-                obtener_hashes_libreria(stack_runner->nombre_archivo);
+            obtener_hashes_libreria(tope_pila->nombre_archivo);
+            pop();
         }
         
-        stack_runner = stack_runner->siguiente;
+        tope_pila = tope_pila->siguiente;
     }
 }
 
@@ -67,14 +69,29 @@ void push(char* nombre){
 }
 
 /*Funcion para desapilar*/
-char* pop(){
+void pop(){
+    if(tope_pila != NULL){
+        struct Nodo* eliminado = tope_pila;
+        tope_pila = tope_pila->siguiente;
+        free(eliminado->nombre_archivo);
+        free(eliminado);
+    }else{
+        printf("La pila de archivos esta vacía");
+    }
+}
 
-    char* nombre = tope_pila->nombre_archivo;
-    struct Nodo* eliminado = tope_pila;
-    tope_pila = tope_pila->siguiente;
-    free(eliminado);
-    return nombre;
+int esta_contenido(char* nombre){
+    struct Nodo* stack_runner = tope_pila;
 
+    while (stack_runner!=NULL)
+    {
+        if(strcmp(stack_runner->nombre_archivo, nombre)==0){
+            return 1;
+        }
+        
+        stack_runner = stack_runner->siguiente;
+    }
+    return 0;
 }
 
 void liberar_pila(){
@@ -83,7 +100,9 @@ void liberar_pila(){
     while(aux!=NULL){
         borrado = aux;
         aux = aux->siguiente;
+        free(borrado->nombre_archivo);
         free(borrado);
+
     }
 }
 
@@ -146,6 +165,7 @@ void liberar_lista(){
     while(aux!=NULL){
         borrado = aux;
         aux = aux->siguiente;
+        free(borrado->nombre_archivo);
         free(borrado);
     }
 }
@@ -156,6 +176,8 @@ void liberar_lista_duplicados(){
     while(aux!=NULL){
         borrado = aux;
         aux = aux->siguiente;
+        free(borrado->archivo);
+        free(borrado->duplicado);
         free(borrado);
     }
 }
