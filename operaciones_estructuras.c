@@ -28,6 +28,7 @@ void comparar_hash(char* archivo, char hash[33]) {
         }
         aux = aux->siguiente;
     }
+    //imprimir_lista_duplicados();
 }
 
 /*FUNCION PROVISIONAL PARA CORRER obtener_hashes*/
@@ -38,14 +39,14 @@ void runner(char modo){
     {
         if(modo == 'e'){
             obtener_hashes_exec(tope_pila->nombre_archivo);
-            pop();
+            comparar_hash(cabeza->nombre_archivo, cabeza->valor_hash);
         }else 
             if(modo == 'l'){
             obtener_hashes_libreria(tope_pila->nombre_archivo);
-            pop();
+            comparar_hash(cabeza->nombre_archivo, cabeza->valor_hash);
         }
         
-        tope_pila = tope_pila->siguiente;
+        pop();
     }
 }
 
@@ -70,13 +71,12 @@ void push(char* nombre){
 
 /*Funcion para desapilar*/
 void pop(){
+    
     if(tope_pila != NULL){
         struct Nodo* eliminado = tope_pila;
         tope_pila = tope_pila->siguiente;
         free(eliminado->nombre_archivo);
         free(eliminado);
-    }else{
-        printf("La pila de archivos esta vacía");
     }
 }
 
@@ -201,7 +201,7 @@ void imprimir_lista(){
 
         printf("-------------------------------------------------\n");
         printf("%s\n", impreso->nombre_archivo);
-        printf("%s", impreso->valor_hash);
+        printf("%s\n", impreso->valor_hash);
         printf("-------------------------------------------------\n\n");
 
         impreso = impreso->siguiente;

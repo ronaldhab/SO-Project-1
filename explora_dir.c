@@ -6,8 +6,8 @@
 #include <unistd.h>
 #include <semaphore.h>
 #include "operaciones_estructuras.h"
-
-sem_t pila_mutex;
+#include "hilos.h"
+#include "semaforos.h"
 
 /*Contador provisional*/
 int count = 0;
@@ -17,8 +17,6 @@ void explora_dir(const char *directorio){
 
     DIR *carpeta;
     struct dirent *entrada_dir;
-
-    sem_init(&pila_mutex, 0, 1);
 
     carpeta = opendir(directorio);
     if(carpeta == NULL){
@@ -38,12 +36,12 @@ void explora_dir(const char *directorio){
             /*Introducimos el nombre del archivo en la pila de "Por visitar"
             Al ser un recurso compartido debe manipularse dentro de una
             seccion critica*/
-            sem_wait(&pila_mutex);
+            //sem_wait(&pila_hash_mutex);
                 if(!esta_contenido(nombre_archivo)){
                     push(nombre_archivo);
                 }
-            sem_post(&pila_mutex);
-                
+            //sem_post(&pila_hash_mutex);
+            
             count++;
             
         }else if(entrada_dir->d_type == DT_DIR && strcmp(entrada_dir->d_name, ".") != 0 && strcmp(entrada_dir->d_name, "..") != 0){

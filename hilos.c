@@ -3,62 +3,95 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <semaphore.h>
+#include "hilos.h"
+#include "semaforos.h"
 #include "estructuras.h"
 #include "explora_dir.h"
-
-sem_t pila_hash_mutex;
-sem_t visitados_mutex;
-sem_t coord_hash;
-sem_t compara_coord;
+#include "operaciones_estructuras.h"
+#include "obtener_hashes.h"
 
 void *explora_directorios(void* arg){
-    sem_init(&coord_hash, 0, 0);
+    
     char* dir = (char*)arg;
+
     explora_dir(dir);
+
     sem_post(&coord_hash);
+
+    pthread_exit(NULL);
+
 }
 
 void *codifica_hashes(void* arg){
 
     char modo = *(char*)arg;
 
-    sem_init(&compara_coord, 0, 0);
     sem_wait(&coord_hash);
-        sem_init(&pila_hash_mutex, 0, 1);
-        sem_init(&visitados_mutex, 0, 1);
+    sem_post(&coord_hash);
 
-        while (tope_pila!=NULL)
-        {
-            if(modo == 'e'){
+    while (tope_pila!=NULL)
+    {
+        if(modo == 'e'){
 
-                obtener_hashes_exec(tope_pila->nombre_archivo);
+            obtener_hashes_exec(tope_pila->nombre_archivo);
 
-                sem_wait(&pila_hash_mutex);
-                    pop();
-                sem_post(&pila_hash_mutex);    
-            }else 
-                if(modo == 'l'){
-                obtener_hashes_libreria(tope_pila->nombre_archivo);
-                pop();
-            }
-            
-            tope_pila = tope_pila->siguiente;
+        }else if(modo == 'l'){
+
+            obtener_hashes_libreria(tope_pila->nombre_archivo);
+            //printf("HOLAAAA\n");
+
         }
 
+        sem_wait(&visitados_mutex);
+            insertar_visitados(tope_pila->nombre_archivo, hash);   
+        sem_post(&visitados_mutex);
+
+        
+        //imprimir_lista();
+
+        sem_post(&compara_coord);
+        sem_wait(&coord_hash);
+        //sem_post(&coord_hash);
+
+        pop();
+        
+        
+        //imprimir_lista();
+    }
+
+    pthread_exit(NULL);
 }
 
 void *compara_hashes(void* arg){
 
     sem_wait(&compara_coord);
-    sem_wait(&visitados_mutex);
-        comparar_hash(cabeza->nombre_archivo, cabeza->valor_hash);
-    sem_post(&visitados_mutex);
 
+    while(tope_pila!=NULL){
+        sem_wait(&visitados_mutex);
+            comparar_hash(cabeza->nombre_archivo, cabeza->valor_hash);
+            //imprimir_lista_duplicados();
+        sem_post(&visitados_mutex);
+        sem_post(&coord_hash);
+        sem_wait(&compara_coord);
+    }
+
+    
+    
+    pthread_exit(NULL);
 }
 
 void crear_hilos(int cant, char* dir, char hash_modo) {
+
+    //Inicializamos los semaforos que usaremos
+    inicializar_semaforos();
+
     pthread_t hilos[cant];
+    pthread_attr_t atributos;
+    pthread_attr_init(&atributos);
+    pthread_attr_setdetachstate(&atributos, PTHREAD_CREATE_DETACHED);
+
     int i;
+    int j;
     int resto;
 
     if((cant%2)!=0){
@@ -70,27 +103,39 @@ void crear_hilos(int cant, char* dir, char hash_modo) {
     char* directorio = (char*)malloc(sizeof(NAME_MAX));
     directorio = dir;
     char* modo = malloc(sizeof(char));
-    modo = hash_modo;
+    modo = &hash_modo;
 
-    for(i = 0; i < (cant - resto)/2; i++) {
+    printf("el char es %s\n", modo);
+
+    if(pthread_create(hilos + i, NULL, &explora_directorios, directorio) != 0) {
+        perror("Error al crear el hilo");
+        exit(1);
+    }
+
+    for(i = 0; i < cant - 2; i++) {
         
-
-        if(pthread_create(hilos + i, NULL, &explora_directorios, directorio) != 0) {
-            perror("Error al crear el hilo");
-            exit(1);
-        }
         if(pthread_create(hilos + i, NULL, &codifica_hashes, modo) != 0) {
             perror("Error al crear el hilo");
             exit(1);
         } 
     }
+
     if(pthread_create(hilos + i, NULL, &compara_hashes, NULL) != 0) {
         perror("Error al crear el hilo");
         exit(1);
 
     }
 
-    for(int i = 0; i < cant; i++) {
-        pthread_join(hilos[i], NULL);
+    //pthread_detach(hilos[j]);
+
+    for(j = 0; j < cant; j++) {
+        pthread_join(hilos[j], NULL);
     }
+
+   
+
+    sem_destroy(&coord_hash);
+    sem_destroy(&compara_coord);
+    sem_destroy(&pila_hash_mutex);
+    sem_destroy(&visitados_mutex);
 } 
