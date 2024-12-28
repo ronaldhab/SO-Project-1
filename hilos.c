@@ -120,6 +120,7 @@ void crear_hilos(int cant, char* dir, char hash_modo) {
         } 
     }
 
+
     if(pthread_create(hilos + i, NULL, &compara_hashes, NULL) != 0) {
         perror("Error al crear el hilo");
         exit(1);
