@@ -22,7 +22,7 @@ void *explora_directorios(void* arg){// DE MOMENTO SIN PROBLEMAS
 
 }
 
-void *codifica_hashes(void* arg){// EN CONSTRUCCION
+void *codifica_hashes(void* arg){// EN CONSTRUCCION (PRIORIDAD)
 
     char modo = *(char*)arg;
 
@@ -60,7 +60,9 @@ void *codifica_hashes(void* arg){// EN CONSTRUCCION
     pthread_exit(NULL);
 }
 
-void *compara_hashes(void* arg){// EN CONSTRUCCION (PRIORIDAD)
+void *compara_hashes(void* arg){// EN CONSTRUCCION 
+
+    /*SE ESTA AGREGANDO MAS DE UNA VEZ EL MISMO ELEMENTO A LA LISTA DE DUPLICADOS OJO!*/
 
     sem_wait(&compara_coord);//Esperamos por el codificador de hashes
 
