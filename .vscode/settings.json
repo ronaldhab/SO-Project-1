@@ -9,6 +9,7 @@
         "optional": "c",
         "string_view": "c",
         "system_error": "c",
-        "typeinfo": "c"
+        "typeinfo": "c",
+        "operaciones_estructuras.h": "c"
     }
 }
