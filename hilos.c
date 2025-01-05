@@ -110,6 +110,7 @@ void crear_hilos(int cant, char* dir, char hash_modo) {
 
 
     // A PARTIR DE AQUI DA EL ERROR DE VIOLACION DE SEGMENTO
+    
     //Creamos el hilo de explorar directorio (DE MOMENTO SERÁ ÚNICO)
     if(pthread_create(hilos + i, NULL, &explora_directorios, directorio) != 0) {
         perror("Error al crear el hilo");
