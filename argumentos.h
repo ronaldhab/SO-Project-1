@@ -1,9 +1,8 @@
-#ifndef argumentos_h
-#define argumentos_h
+#ifndef _ARGUMENTOS_H_
+#define _ARGUMENTOS_H_
 
 #include <errno.h>
 #include <string.h>
-#include <sys/stat.h>
 #include <sys/stat.h>
 #include <stdio.h>
 #include <stdlib.h>

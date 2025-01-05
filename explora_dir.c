@@ -3,7 +3,11 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include "operaciones.h"
+#include <unistd.h>
+#include <semaphore.h>
+#include "operaciones_estructuras.h"
+#include "hilos.h"
+#include "semaforos.h"
 
 /*Contador provisional*/
 int count = 0;
@@ -29,8 +33,15 @@ void explora_dir(const char *directorio){
             strcat(nombre_archivo, "/");
             strcat(nombre_archivo, entrada_dir->d_name);
 
-            /*Introducimos el nombre del archivo en la pila de "Por visitar"*/
-            push(nombre_archivo);
+            /*Introducimos el nombre del archivo en la pila de "Por visitar"
+            Al ser un recurso compartido debe manipularse dentro de una
+            seccion critica*/
+            //sem_wait(&pila_hash_mutex);
+                if(!esta_contenido(nombre_archivo)){
+                    push(nombre_archivo);
+                }
+            //sem_post(&pila_hash_mutex);
+            
             count++;
             
         }else if(entrada_dir->d_type == DT_DIR && strcmp(entrada_dir->d_name, ".") != 0 && strcmp(entrada_dir->d_name, "..") != 0){

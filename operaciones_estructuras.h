@@ -1,7 +1,6 @@
-#ifndef operaciones_h
-#define operaciones_h
+#ifndef _OPERACIONES_H_
+#define _OPERACIONES_H_
 
-#include "estructuras.h"
 #include <stdlib.h>
 
 /***********************OPERACIONES PARA LAS ESTRUCTURAS***********************/
@@ -9,7 +8,10 @@
 void push(char* nombre);
 
 //SACAR ELEMENTO DE LA PILA
-char* pop();
+void pop();
+
+//VERIFICAR SI UN ELEMENTO SE ENCUENTRA EN LA PILA
+int esta_contenido(char* nombre);
 
 //BORRAR LA PILA
 void liberar_pila();
@@ -22,13 +24,17 @@ void insertar_duplicados(char* archivo, char* duplicado);
 
 //BORRAR LA LISTA
 void liberar_lista();
+void liberar_lista_duplicados();
 
-//IMPRIMIR LA PILA
+//IMPRIMIR ESTRUCTURAS
 void imprimir_pila();
+void imprimir_lista();
+void imprimir_lista_duplicados();
 
-void comparar_hash();
-void obtener_hashes_libreria();
-void obtener_hashes_exec();
+void comparar_hash(char* archivo, char hash[33]);
+
+//PROVISIONAL
+void runner(char modo);
 
 /******************************************************************************/
 

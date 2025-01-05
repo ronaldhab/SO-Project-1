@@ -1,16 +1,29 @@
 #include <stdio.h>
 #include <string.h>
+#include <pthread.h>
+#include <semaphore.h>
+#include <unistd.h>
 // #include "argumentos.h"
-#include "operaciones.h"
+#include "operaciones_estructuras.h"
+#include "explora_dir.h"
+#include "estructuras.h"
+#include "hilos.h"
 
 int main(int argc, char *argv[]) {
-    // identificar_argumentos(argc, argv);
-    char *directorio = argv[4];
-    insertar_visitados("operaciones.h", "0");
-    insertar_visitados("argumentos.c", "0");
-    insertar_visitados("explora_dir.c", "0");
-    insertar_visitados("readme.md", "0");
 
-    obtener_hashes_exec();
+    crear_hilos(5, "/home/ronald/Desktop/ProofCode", 'l');
+
+    //explora_dir(".");
+
+    //runner('e');
+
+    imprimir_lista();
+    imprimir_lista_duplicados();
+
+
+    liberar_lista();
+    liberar_pila();
+    liberar_lista_duplicados();
+
     return 0;
 }
