@@ -10,6 +10,8 @@
 #include "operaciones_estructuras.h"
 #include "obtener_hashes.h"
 
+int finish = 0;
+
 void *explora_directorios(void* arg){// DE MOMENTO SIN PROBLEMAS
     
     char* dir = (char*)arg;
@@ -17,7 +19,7 @@ void *explora_directorios(void* arg){// DE MOMENTO SIN PROBLEMAS
     explora_dir(dir); //La funcion esta en el .c que se llama igual
     // printf("La direccion es: %s\n", dir);
 
-    sem_post(&coord_hash); //Pasamos el control al codificador de hashes
+    //sem_post(&coord_hash); //Pasamos el control al codificador de hashes
 
     pthread_exit(NULL);
 
@@ -27,8 +29,9 @@ void *codifica_hashes(void* arg){// EN CONSTRUCCION (PRIORIDAD)
 
     char modo = *(char*)arg;
 
-    sem_wait(&coord_hash); //Esperamos por el explorador de directorios
-    sem_post(&coord_hash); //Liberamos todos los hilos que estaban en espera
+    sleep(1);
+    //sem_wait(&coord_hash); //Esperamos por el explorador de directorios
+    //sem_post(&coord_hash); //Liberamos todos los hilos que estaban en espera
 
     while (tope_pila!=NULL)
     {
@@ -58,6 +61,7 @@ void *codifica_hashes(void* arg){// EN CONSTRUCCION (PRIORIDAD)
         //imprimir_lista();
     }
 
+    finish = 1;
     pthread_exit(NULL);
 }
 
@@ -65,15 +69,16 @@ void *compara_hashes(void* arg){// EN CONSTRUCCION
 
     /*SE ESTA AGREGANDO MAS DE UNA VEZ EL MISMO ELEMENTO A LA LISTA DE DUPLICADOS OJO!*/
 
-    sem_wait(&compara_coord);//Esperamos por el codificador de hashes
+    //sem_wait(&compara_coord);//Esperamos por el codificador de hashes
 
-    while(tope_pila!=NULL){
+    while(!finish){
+        sem_wait(&compara_coord);//Esperamos por el codificador de hashes
+
         sem_wait(&visitados_mutex);//Seccion critica, recorremos la lista de visitados
             comparar_hash(cabeza->nombre_archivo, cabeza->valor_hash);
             //imprimir_lista_duplicados();
         sem_post(&visitados_mutex);
         sem_post(&coord_hash);//Liberamos al codificador de hashes
-        sem_wait(&compara_coord);//Esperamos por el codificador de hashes
     }
 
     
@@ -127,7 +132,6 @@ void crear_hilos(int cant, char* dir, char hash_modo) {
             perror("Error al crear el hilo");
             exit(1);
         } 
-        sleep(3);
     }
 
     //Creamos el hilo para el comparador
@@ -138,7 +142,7 @@ void crear_hilos(int cant, char* dir, char hash_modo) {
     }
 
     //Join de los hilos creados
-    for(int i = 0; i < cant; i++) {
+    for(int i = 0; i < cant-1; i++) {
         pthread_join(hilos[i], NULL);
     }
 
