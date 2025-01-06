@@ -27,7 +27,7 @@ void obtener_hashes_libreria(char* nombre_archivo) {
 /*Funcion para obtener los hash en modo ejecutable*/
 void obtener_hashes_exec(char* nombre_archivo) {
 
-    char hash_code[33] = { 0 };
+    // char hash_code[40] = { 0 };
     pid_t pid;
     int fd[2];
     
@@ -44,13 +44,11 @@ void obtener_hashes_exec(char* nombre_archivo) {
         close(fd[WRITE]);
 
         execlp("md5-app/md5", "./md5", nombre_archivo, NULL);    
+        fflush(stdout);
     }
-    else{
-        
-        read(fd[READ], hash_code, 33);
+    else{        
+        read(fd[READ], hash, 33);
         close(fd[READ]);
-
-        
-        insertar_visitados(nombre_archivo, hash_code);
     }
+    fflush(stdout);
 }
