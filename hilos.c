@@ -62,7 +62,6 @@ void *codifica_hashes(void* arg){// EN CONSTRUCCION (PRIORIDAD)
         //imprimir_lista();
     }
 
-    finish = 1;
     pthread_exit(NULL);
 }
 
@@ -72,13 +71,13 @@ void *compara_hashes(void* arg){// EN CONSTRUCCION
 
     //sem_wait(&compara_coord);//Esperamos por el codificador de hashes
 
-    while(!finish){
+    while(tope_pila!=NULL){
         sem_wait(&compara_coord);//Esperamos por el codificador de hashes
 
-        sem_wait(&visitados_mutex);//Seccion critica, recorremos la lista de visitados
+        //sem_wait(&visitados_mutex);//Seccion critica, recorremos la lista de visitados
             comparar_hash(cabeza->nombre_archivo, cabeza->valor_hash);
             //imprimir_lista_duplicados();
-        sem_post(&visitados_mutex);
+        //sem_post(&visitados_mutex);
         sem_post(&pila_hash_mutex);//Liberamos al codificador de hashes
     }
 
