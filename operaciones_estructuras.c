@@ -108,6 +108,7 @@ void liberar_pila(){
 
 void insertar_visitados(char* nombre, char codigo[33]){
 
+    int insertado = 0;
     struct Nodo_visitados *nuevo;
     nuevo = malloc(sizeof(struct Nodo_visitados));
     nuevo->nombre_archivo = (char*)malloc(NAME_MAX);
@@ -118,8 +119,23 @@ void insertar_visitados(char* nombre, char codigo[33]){
         cabeza = nuevo;
         nuevo->siguiente = NULL;
     }else{
-        nuevo->siguiente = cabeza;
-        cabeza = nuevo;
+
+        struct Nodo_visitados *aux = cabeza;
+        while(aux != NULL && !insertado){ 
+            if(strcmp(aux->nombre_archivo, nombre) == 0){
+                nuevo->siguiente = aux->siguiente;
+                aux->siguiente = nuevo;
+
+                insertado = 1;
+            }
+            aux = aux->siguiente;
+        }
+        
+        if(!insertado){
+            nuevo->siguiente = cabeza;
+            cabeza = nuevo;
+        }
+        
     }
 
 }
@@ -142,7 +158,7 @@ void insertar_duplicados(char* nombre, char* nombre_duplicado){
     }else{
         struct Nodo_duplicados *aux = duplicados;
 
-        while(aux != NULL && insertado == 0){ 
+        while(aux != NULL && !insertado){ 
             if(strcmp(aux->archivo, nombre) == 0){
                 nuevo->siguiente = aux->siguiente;
                 aux->siguiente = nuevo;
