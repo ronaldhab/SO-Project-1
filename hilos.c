@@ -10,8 +10,6 @@
 #include "operaciones_estructuras.h"
 #include "obtener_hashes.h"
 
-int cont = 0;
-
 void *explora_directorios(void* arg){// DE MOMENTO SIN PROBLEMAS
     
     char* dir = (char*)arg;
@@ -125,7 +123,6 @@ void crear_hilos(int cant, char* dir, char hash_modo) {
 
     //Creamos los hilos de codificar los hashes (LA LOGICA ES QUE TENGA TODOS LOS HILOS MENOS 2)
     for(; i <= cant - 2; i++) {      
-        cont++;
         if(pthread_create(hilos + i, NULL, &codifica_hashes, modo) != 0) {
             perror("Error al crear el hilo");
             exit(1);
@@ -141,15 +138,9 @@ void crear_hilos(int cant, char* dir, char hash_modo) {
     }
 
     //Join de los hilos creados
-    ///*
     for(int i = 0; i < cant; i++) {
         pthread_join(hilos[i], NULL);
     }
-    //*/
-
-    // pthread_join(hilos[0], NULL);
-    // pthread_join(hilos[1], NULL);
-
 
     //Destruimos los semaforos
     sem_destroy(&coord_hash);
