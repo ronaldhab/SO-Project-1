@@ -11,13 +11,12 @@
 
 int main(int argc, char *argv[]) {
 
-    crear_hilos(5, "/home/brhandon/Documentos/SO-Project-1", 'l');
+    crear_hilos(3, "ProofCode", 'l');
 
     //explora_dir(".");
 
     //runner('e');
 
-    printf("Llegue aqui");
     imprimir_lista();
     imprimir_lista_duplicados();
 

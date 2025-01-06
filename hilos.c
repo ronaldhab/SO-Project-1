@@ -10,11 +10,14 @@
 #include "operaciones_estructuras.h"
 #include "obtener_hashes.h"
 
+int cont = 0;
+
 void *explora_directorios(void* arg){// DE MOMENTO SIN PROBLEMAS
     
     char* dir = (char*)arg;
 
-    explora_dir(dir);
+    explora_dir(dir); //La funcion esta en el .c que se llama igual
+    // printf("La direccion es: %s\n", dir);
 
     sem_post(&coord_hash); //Pasamos el control al codificador de hashes
 
@@ -90,7 +93,7 @@ void crear_hilos(int cant, char* dir, char hash_modo) {
     pthread_attr_init(&atributos);
     pthread_attr_setdetachstate(&atributos, PTHREAD_CREATE_DETACHED);
 
-    int i;
+    int i = 0;
     int resto;
 
 //Logica para repartir los hilos (EN ESPERA A MEJORAS)
@@ -116,14 +119,16 @@ void crear_hilos(int cant, char* dir, char hash_modo) {
         perror("Error al crear el hilo");
         exit(1);
     }
+    i++;
 
     //Creamos los hilos de codificar los hashes (LA LOGICA ES QUE TENGA TODOS LOS HILOS MENOS 2)
-    for(i = 0; i < cant - 2; i++) {
-        
+    for(; i <= cant - 2; i++) {      
+        cont++;
         if(pthread_create(hilos + i, NULL, &codifica_hashes, modo) != 0) {
             perror("Error al crear el hilo");
             exit(1);
         } 
+        sleep(3);
     }
 
     //Creamos el hilo para el comparador
@@ -134,9 +139,15 @@ void crear_hilos(int cant, char* dir, char hash_modo) {
     }
 
     //Join de los hilos creados
+    ///*
     for(int i = 0; i < cant; i++) {
         pthread_join(hilos[i], NULL);
     }
+    //*/
+
+    // pthread_join(hilos[0], NULL);
+    // pthread_join(hilos[1], NULL);
+
 
     //Destruimos los semaforos
     sem_destroy(&coord_hash);
