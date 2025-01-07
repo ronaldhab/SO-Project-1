@@ -11,6 +11,7 @@
 #include "obtener_hashes.h"
 
 int finish = 0;
+int value = 0;
 
 void *explora_directorios(void* arg){// DE MOMENTO SIN PROBLEMAS
     
@@ -21,19 +22,24 @@ void *explora_directorios(void* arg){// DE MOMENTO SIN PROBLEMAS
 
     //sem_post(&coord_hash); //Pasamos el control al codificador de hashes
 
+    //free(arg);
     pthread_exit(NULL);
-
 }
 
 void *codifica_hashes(void* arg){// EN CONSTRUCCION (PRIORIDAD)
 
     char modo = *(char*)arg;
-    sem_wait(&coord_hash); //Esperamos por el explorador de directorios
+
+    sem_wait(&coord_hash); 
+        sleep(1);//SLEEP PARA DIVIDIR LA EJECUCION DE LOS HILOS
+    sem_post(&coord_hash); 
+
+    
     //sem_post(&coord_hash); //Liberamos todos los hilos que estaban en espera
 
     while (tope_pila!=NULL)
     {
-        sem_wait(&visitados_mutex);    
+        sem_wait(&hash_mutex);    
             if(modo == 'e'){
 
                 obtener_hashes_exec(tope_pila->nombre_archivo);
@@ -42,26 +48,34 @@ void *codifica_hashes(void* arg){// EN CONSTRUCCION (PRIORIDAD)
 
                 obtener_hashes_libreria(tope_pila->nombre_archivo);
             }
-        sem_post(&visitados_mutex);
+
+            sem_wait(&visitados_mutex);
+                insertar_visitados(tope_pila->nombre_archivo, hash);   
+            sem_post(&visitados_mutex);
+
+            pop();
+
+        
+        sem_post(&hash_mutex);
 
         //printf("El nombre a guardar es %s ------ y el id del hilo es %lu\n", tope_pila->nombre_archivo, pthread_self());
-        sem_wait(&visitados_mutex); //Seccion critica lista de visitados
-            insertar_visitados(tope_pila->nombre_archivo, hash);   
-            pop();
-        sem_post(&visitados_mutex);
 
         
         //imprimir_lista();
+        sem_wait(&compara_mutex);
+            sem_post(&compara_coord); //Le pasamos el control al hilo del comparador
+            sem_wait(&pila_hash_mutex); //Esperamos por el comparador
+        sem_post(&compara_mutex);
+        
 
-        sem_post(&compara_coord); //Le pasamos el control al hilo del comparador
-        sem_wait(&pila_hash_mutex); //Esperamos por el comparador
         //sem_post(&coord_hash);
         
-        sem_post(&coord_hash); //Liberamos todos los hilos que estaban en espera
+        //sem_post(&coord_hash); //Liberamos todos los hilos que estaban en espera
         
         //imprimir_lista();
     }
 
+    //free(arg);
     pthread_exit(NULL);
 }
 
@@ -69,21 +83,23 @@ void *compara_hashes(void* arg){// EN CONSTRUCCION
 
     /*SE ESTA AGREGANDO MAS DE UNA VEZ EL MISMO ELEMENTO A LA LISTA DE DUPLICADOS OJO!*/
 
+    //printf("SOY EL HILO %lu\n", pthread_self());
+
+    //sem_post(&coord_hash);
     //sem_wait(&compara_coord);//Esperamos por el codificador de hashes
 
-    while(tope_pila!=NULL){
+    while(1){
         sem_wait(&compara_coord);//Esperamos por el codificador de hashes
 
-        //sem_wait(&visitados_mutex);//Seccion critica, recorremos la lista de visitados
+        sem_wait(&visitados_mutex);//Seccion critica, recorremos la lista de visitados
             comparar_hash(cabeza->nombre_archivo, cabeza->valor_hash);
             //imprimir_lista_duplicados();
-        //sem_post(&visitados_mutex);
+        sem_post(&visitados_mutex);
         sem_post(&pila_hash_mutex);//Liberamos al codificador de hashes
     }
 
-    
-    
-    pthread_exit(NULL);
+    //free(arg);
+    //pthread_exit(NULL);
 }
 
 void crear_hilos(int cant, char* dir, char hash_modo) {
@@ -124,10 +140,11 @@ void crear_hilos(int cant, char* dir, char hash_modo) {
         perror("Error al crear el hilo");
         exit(1);
     }
+    //sleep(2);
     i++;
 
     //Creamos los hilos de codificar los hashes (LA LOGICA ES QUE TENGA TODOS LOS HILOS MENOS 2)
-    for(; i <= cant - 2; i++) {      
+    for(; i <= cant-2; i++) {      
         if(pthread_create(hilos + i, NULL, &codifica_hashes, modo) != 0) {
             perror("Error al crear el hilo");
             exit(1);
@@ -141,6 +158,8 @@ void crear_hilos(int cant, char* dir, char hash_modo) {
         exit(1);
 
     }
+    
+   
 
     //Join de los hilos creados
     for(int i = 0; i < cant-1; i++) {
@@ -149,6 +168,7 @@ void crear_hilos(int cant, char* dir, char hash_modo) {
 
     //Destruimos los semaforos
     sem_destroy(&coord_hash);
+    sem_destroy(&hash_mutex);
     sem_destroy(&compara_coord);
     sem_destroy(&pila_hash_mutex);
     sem_destroy(&visitados_mutex);
