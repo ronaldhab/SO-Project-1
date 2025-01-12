@@ -13,7 +13,7 @@
 int count = 0;
 
 /*Funcion encargada de explorar los directorios y crear la pila de archivos "Por visitar"*/
-void explora_dir(const char *directorio){
+int explora_dir(const char *directorio){
 
     DIR *carpeta;
     struct dirent *entrada_dir;
@@ -57,4 +57,6 @@ void explora_dir(const char *directorio){
         }
     }
     closedir(carpeta);
+
+    return count;
 }

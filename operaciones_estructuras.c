@@ -16,7 +16,6 @@ struct Nodo_duplicados *duplicados = NULL;
 
 /*Funcion para comparar los hash*/
 void comparar_hash(char* archivo, char hash[33]) {
-    int cont = 0;
     struct Nodo_visitados *aux = cabeza->siguiente; 
     int es_duplicado = 0;
 
@@ -159,9 +158,7 @@ void insertar_duplicados(char* nombre, char* nombre_duplicado){
         struct Nodo_duplicados *aux = duplicados;
 
         while(aux != NULL && !insertado){ 
-            if(strcmp(aux->archivo, nombre) == 0){
-                nuevo->siguiente = aux->siguiente;
-                aux->siguiente = nuevo;
+            if((strcmp(aux->archivo, nombre) == 0) && (strcmp(aux->duplicado, nombre_duplicado) == 0) ){
 
                 insertado = 1;
             }
