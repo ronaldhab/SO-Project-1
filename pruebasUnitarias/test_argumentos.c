@@ -6,7 +6,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
 int es_directorio_valido(const char *ruta) {
     struct stat info;
 
@@ -102,7 +101,6 @@ int identificar_argumentos(int argc, char *argv[]) {
     return 0;
 }
 
-
 void test_es_directorio_valido(void) {
     printf("\nTest es_directorio_valido\n");
     // Caso valido
@@ -111,7 +109,6 @@ void test_es_directorio_valido(void) {
     // Caso invalido
     CU_ASSERT(es_directorio_valido("non_existing_directory") == 0);
 }
-
 
 void test_numero_de_hilos_validos(void) {
     printf("\nTest numero_de_hilos_validos\n");
