@@ -115,12 +115,16 @@ void test_es_directorio_valido(void) {
 
 void test_numero_de_hilos_validos(void) {
     printf("\nTest numero_de_hilos_validos\n");
-    const char *endptr = NULL;
+    char *endptr;
+    
     // Caso valido
-    CU_ASSERT(numero_de_hilos_validos("5", endptr, 5) == 1);
+    char *argv = "5";
+    long num = strtol(argv, &endptr, 10);
+    CU_ASSERT(numero_de_hilos_validos(argv, endptr, num) == 1);
 
-    endptr = NULL;
     // Caso invalido
+    argv = "m";
+    num = strtol(argv, &endptr, 10);
     CU_ASSERT(numero_de_hilos_validos("f", endptr, 0) == 0);
 }
 
