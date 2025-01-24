@@ -11,7 +11,7 @@
 
 int main(int argc, char *argv[]) {
 
-    crear_hilos(3, "ProofCode", 'l');
+    crear_hilos(5, "ProofCode", 'l');
 
     //explora_dir(".");
 
