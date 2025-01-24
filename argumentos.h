@@ -7,7 +7,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
 /***********************VERIFICAR ARGUMENTOS*************************/
 void identificar_argumentos(int argc, char *argv[]);
 int es_directorio_valido(const char *ruta);
