@@ -6,10 +6,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
-// #include <semaphore.h>
-// #include "../operaciones_estructuras.h"
-// #include "../hilos.h"
-// #include "../semaforos.h"
 
 /*Contador provisional*/
 int count = 0;
@@ -22,7 +18,6 @@ int explora_dir(const char *directorio){
 
     carpeta = opendir(directorio);
     if(carpeta == NULL){
-        printf("Error al intentar abrir la carpeta\n");
         return 1;
     }
 
@@ -63,7 +58,6 @@ int explora_dir(const char *directorio){
 }
 
 void test_explora_dir(void) {
-    printf("\nTest explora_dir\n");
 
     // Caso valido
     CU_ASSERT(explora_dir("ProofCode") == 0);
