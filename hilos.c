@@ -1,5 +1,6 @@
 #define _DEFAULT_SOURCE
 #include <dirent.h>
+#include <string.h>
 #include <pthread.h>
 #include <unistd.h>
 #include <semaphore.h>
@@ -12,6 +13,7 @@
 
 int finish = 0;
 int value = 0;
+int cantidad_total = 0;
 sem_t empty;
 
 pthread_mutex_t mutex_list;
@@ -27,9 +29,13 @@ void *explora_directorios(void* arg){// DE MOMENTO SIN PROBLEMAS
     sem_post(&pila_hash_mutex); //Pasamos el control al codificador de hashes
 
     //free(arg);
-    pthread_exit(NULL);
+    
+
+    //pthread_exit(NULL);
 }
 */
+
+
 
 void *codifica_hashes(void* arg){// EN CONSTRUCCION (PRIORIDAD)
 
@@ -37,15 +43,15 @@ void *codifica_hashes(void* arg){// EN CONSTRUCCION (PRIORIDAD)
     //sem_post(&pila_hash_mutex); //Pasamos el control al codificador de hashes
 
     //sleep(1);//SLEEP PARA DIVIDIR LA EJECUCION DE LOS HILOS
-    //sem_wait(&coord_hash); 
+    //sem_wait(&visitados_mutex); 
 
 
     while (tope_pila!=NULL)
     {
-        sem_wait(&empty);
-
+        //sem_wait(&empty);
 
         sem_wait(&hash_mutex);    
+            if(tope_pila!=NULL){
             if(modo == 'e'){
 
                 obtener_hashes_exec(tope_pila->nombre_archivo);
@@ -56,26 +62,27 @@ void *codifica_hashes(void* arg){// EN CONSTRUCCION (PRIORIDAD)
             }
 
             
-            pthread_mutex_lock(&mutex_list);
+            //pthread_mutex_lock(&mutex_list);
                 insertar_visitados(tope_pila->nombre_archivo, hash);   
-            pthread_mutex_unlock(&mutex_list);
+                sem_post(&compara_coord); //Le pasamos el control al hilo del comparador
+                sem_wait(&coord_hash);
+            //pthread_mutex_unlock(&mutex_list);
 
             //printf("nombre %s ------ id hilo %lu\n\n", tope_pila->nombre_archivo, pthread_self());
 
 
             pop();
-
+            }
 
         sem_post(&hash_mutex);
 
-        sem_post(&pila_hash_mutex); //Le pasamos el control al hilo del comparador
-        
+        //sem_post(&visitados_mutex);
 
-            sem_post(&compara_coord); //Le pasamos el control al hilo del comparador
+        //sem_wait(&pila_hash_mutex); //Le pasamos el control al hilo del comparador
 
-            sem_wait(&coord_hash);
+            
 
-        sem_wait(&pila_hash_mutex); //Le pasamos el control al hilo del comparador
+        //sem_post(&pila_hash_mutex); //Le pasamos el control al hilo del comparador
         
 
 
@@ -88,7 +95,7 @@ void *codifica_hashes(void* arg){// EN CONSTRUCCION (PRIORIDAD)
         //sem_post(&compara_mutex);
         
 
-        //sem_post(&coord_hash);
+        //sem_post(&visitados_mutex);
         
         //sem_post(&coord_hash); //Liberamos todos los hilos que estaban en espera
         
@@ -96,17 +103,19 @@ void *codifica_hashes(void* arg){// EN CONSTRUCCION (PRIORIDAD)
     }
 
     //free(arg);
+    //sem_post(&visitados_mutex);
     pthread_exit(NULL);
 }
 
 void *compara_hashes(void* arg){// EN CONSTRUCCION 
 
+    //int count=0;
     /*SE ESTA AGREGANDO MAS DE UNA VEZ EL MISMO ELEMENTO A LA LISTA DE DUPLICADOS OJO!*/
 
     //printf("SOY EL HILO %lu\n", pthread_self());
     //sem_wait(&compara_coord);//Esperamos por el codificador de hashes
 
-    while(1){
+    while(cantidad_total>0){
 
         sem_wait(&compara_coord);//Esperamos por el codificador de hashes  
 
@@ -119,7 +128,7 @@ void *compara_hashes(void* arg){// EN CONSTRUCCION
 
 
         //sem_post(&hash_mutex); //Esperamos por el comparador
-
+        cantidad_total--;
         sem_post(&coord_hash); 
 
 
@@ -133,15 +142,18 @@ void *compara_hashes(void* arg){// EN CONSTRUCCION
 
 
     //free(arg);
+    sem_post(&compara_coord);
     pthread_exit(NULL);
 }
 
 void crear_hilos(int cant, int cantidad, char* dir, char hash_modo) {
 
+    cantidad_total = cantidad;
+
     //Inicializamos los semaforos que usaremos
     inicializar_semaforos();
 
-    sem_init(&empty, 0, cantidad);
+    sem_init(&empty, 0, 1);
 
     pthread_mutex_init(&mutex_list, NULL);
 
@@ -194,7 +206,7 @@ void crear_hilos(int cant, int cantidad, char* dir, char hash_modo) {
 
         }else{
             
-            if(pthread_create(hilos + i, &atributos, &compara_hashes, NULL) != 0) {
+            if(pthread_create(hilos + i, NULL, &compara_hashes, NULL) != 0) {
                 perror("Error al crear el hilo");
                 exit(1);
             }
