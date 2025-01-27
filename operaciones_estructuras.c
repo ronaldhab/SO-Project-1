@@ -1,7 +1,6 @@
 #define _DEFAULT_SOURCE
 #include <dirent.h>
 #include <string.h>
-#include <unistd.h>
 #include "operaciones_estructuras.h"
 #include "estructuras.h"
 #include "obtener_hashes.h"
@@ -14,7 +13,7 @@ struct Nodo *tope_pila = NULL;
 struct Nodo_visitados *cabeza = NULL;
 struct Nodo_duplicados *duplicados = NULL;
 
-/*Funcion para comparar los hash*/
+//Funcion para comparar los hash
 void comparar_hash(char* archivo, char hash[33]) {
     struct Nodo_visitados *aux = cabeza->siguiente; 
     int es_duplicado = 0;
@@ -27,10 +26,9 @@ void comparar_hash(char* archivo, char hash[33]) {
         }
         aux = aux->siguiente;
     }
-    //imprimir_lista_duplicados();
 }
 
-/*FUNCION PROVISIONAL PARA CORRER obtener_hashes*/
+//Función para ejecutar el programa en caso de que se requiera 1 hilo
 void runner(char modo){
     struct Nodo* stack_runner = tope_pila;
 
@@ -49,7 +47,7 @@ void runner(char modo){
     }
 }
 
-/*Funcion para apilar*/
+//Funcion para apilar
 void push(char* nombre){
     struct Nodo *nuevo;
     nuevo = malloc(sizeof(struct Nodo));
@@ -68,7 +66,7 @@ void push(char* nombre){
     }
 }
 
-/*Funcion para desapilar*/
+//Funcion para desapilar
 void pop(){
     
     if(tope_pila != NULL){
@@ -79,6 +77,7 @@ void pop(){
     }
 }
 
+//Función para recorrer la pila de archivos y asegurarse de que no se vaya a insertar un duplicado
 int esta_contenido(char* nombre){
     struct Nodo* stack_runner = tope_pila;
 
@@ -93,18 +92,7 @@ int esta_contenido(char* nombre){
     return 0;
 }
 
-void liberar_pila(){
-    struct Nodo *aux = tope_pila;
-    struct Nodo *borrado;
-    while(aux!=NULL){
-        borrado = aux;
-        aux = aux->siguiente;
-        free(borrado->nombre_archivo);
-        free(borrado);
-
-    }
-}
-
+//Función para insertar los archivos en la lista de visitados
 void insertar_visitados(char* nombre, char codigo[33]){
 
     int insertado = 0;
@@ -139,6 +127,7 @@ void insertar_visitados(char* nombre, char codigo[33]){
 
 }
 
+//Función para insertar los archivos en la lista de duplicados
 void insertar_duplicados(char* nombre, char* nombre_duplicado){
 
     int insertado = 0;
@@ -169,6 +158,19 @@ void insertar_duplicados(char* nombre, char* nombre_duplicado){
             nuevo->siguiente = duplicados;
             duplicados = nuevo;
         }
+    }
+}
+
+//Función para borrar la pila
+void liberar_pila(){
+    struct Nodo *aux = tope_pila;
+    struct Nodo *borrado;
+    while(aux!=NULL){
+        borrado = aux;
+        aux = aux->siguiente;
+        free(borrado->nombre_archivo);
+        free(borrado);
+
     }
 }
 

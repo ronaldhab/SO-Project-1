@@ -3,14 +3,11 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
-
-void *explora_directorios(void* arg);
  
 void *codifica_hashes(void* arg);
 
 void *compara_hashes(void* arg);
 
-void crear_hilos(int cant, int cantidad, char* dir, char hash_modo); 
+void crear_hilos(int cant_hilos, int cant_archivos, char hash_modo); 
 
 #endif
