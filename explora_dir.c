@@ -3,17 +3,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
-#include <unistd.h>
-#include <semaphore.h>
 #include "operaciones_estructuras.h"
-#include "hilos.h"
-#include "semaforos.h"
 
-/*Contador provisional*/
+/*Contador de archivos regulares*/
 int count = 0;
 
 /*Funcion encargada de explorar los directorios y crear la pila de archivos "Por visitar"*/
-void explora_dir(const char *directorio){
+int explora_dir(const char *directorio){
 
     DIR *carpeta;
     struct dirent *entrada_dir;
@@ -33,14 +29,10 @@ void explora_dir(const char *directorio){
             strcat(nombre_archivo, "/");
             strcat(nombre_archivo, entrada_dir->d_name);
 
-            /*Introducimos el nombre del archivo en la pila de "Por visitar"
-            Al ser un recurso compartido debe manipularse dentro de una
-            seccion critica*/
-            //sem_wait(&pila_hash_mutex);
-                if(!esta_contenido(nombre_archivo)){
-                    push(nombre_archivo);
-                }
-            //sem_post(&pila_hash_mutex);
+            /*Introducimos el nombre del archivo en la pila de "Por visitar"*/
+            if(!esta_contenido(nombre_archivo)){
+                push(nombre_archivo);
+            }
             
             count++;
             
@@ -57,4 +49,6 @@ void explora_dir(const char *directorio){
         }
     }
     closedir(carpeta);
+
+    return count;
 }

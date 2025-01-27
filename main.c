@@ -13,7 +13,6 @@ int main(int argc, char *argv[]) {
 
     crear_hilos(5, "ProofCode", 'l');
 
-    //explora_dir(".");
 
     //runner('e');
 
