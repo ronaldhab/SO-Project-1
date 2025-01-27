@@ -11,7 +11,9 @@
 
 int main(int argc, char *argv[]) {
 
-    crear_hilos(5, "ProofCode", 'l');
+    int archivos = 0;
+    archivos = explora_dir("ProofCode");
+    crear_hilos(200, archivos, 'l');
 
 
     //runner('e');
