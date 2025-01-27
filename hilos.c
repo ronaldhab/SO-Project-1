@@ -1,7 +1,6 @@
 #define _DEFAULT_SOURCE
 #include <pthread.h>
 #include <unistd.h>
-#include <semaphore.h>
 #include "hilos.h"
 #include "semaforos.h"
 #include "estructuras.h"
