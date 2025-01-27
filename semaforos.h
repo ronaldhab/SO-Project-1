@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <semaphore.h>
 
-extern sem_t coord_dir;
+extern sem_t coord_dir; //Esto se va
 extern sem_t coord_hash;
 extern sem_t hash_mutex;
 extern sem_t compara_mutex;
