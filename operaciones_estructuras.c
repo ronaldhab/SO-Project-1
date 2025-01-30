@@ -77,7 +77,7 @@ void pop(){
     }
 }
 
-//Función para recorrer la pila de archivos y asegurarse de que no se vaya a insertar un duplicado
+//Función para recorrer la pila de archivos y se asegura de que no se vaya a insertar un duplicado
 int esta_contenido(char* nombre){
     struct Nodo* stack_runner = tope_pila;
 
