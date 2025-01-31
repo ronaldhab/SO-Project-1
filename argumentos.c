@@ -67,7 +67,7 @@ void identificar_argumentos(int argc, char *argv[]) {
     //Comprobacion tercer argumento
     char *endptr;
     long num = strtol(argv[2], &endptr, 10);
-    if(numero_de_hilos_validos(argv, endptr, num) == 1) {
+    if(numero_de_hilos_validos(argv, endptr, num) == 0) {
         exit(1);
     }
 
