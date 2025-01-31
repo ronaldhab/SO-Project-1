@@ -36,10 +36,11 @@ void runner(char modo){
     {
         if(modo == 'e'){
             obtener_hashes_exec(tope_pila->nombre_archivo);
+            insertar_visitados(tope_pila->nombre_archivo, hash);
             comparar_hash(cabeza->nombre_archivo, cabeza->valor_hash);
-        }else 
-            if(modo == 'l'){
+        }else if(modo == 'l'){
             obtener_hashes_libreria(tope_pila->nombre_archivo);
+            insertar_visitados(tope_pila->nombre_archivo, hash);
             comparar_hash(cabeza->nombre_archivo, cabeza->valor_hash);
         }
         
@@ -77,7 +78,7 @@ void pop(){
     }
 }
 
-//Función para recorrer la pila de archivos y asegurarse de que no se vaya a insertar un duplicado
+//Función para recorrer la pila de archivos y se asegura de que no se vaya a insertar un duplicado
 int esta_contenido(char* nombre){
     struct Nodo* stack_runner = tope_pila;
 
@@ -225,16 +226,19 @@ void imprimir_lista(){
 
 void imprimir_lista_duplicados(){ 
 
+    int cant_dup = 0;
+    struct Nodo_duplicados *counter = duplicados;
     struct Nodo_duplicados *impreso = duplicados;
-    
-    printf("\n*****************LISTA DE DUPLICADOS*************************\n\n\n");
+
+    while(counter!=NULL){
+        cant_dup++; 
+        counter = counter->siguiente;
+    }
+    printf("\nSe han encontrado %d archivos duplicados.\n\n", cant_dup);
 
     while(impreso != NULL){
-
-        printf("-------------------------------------------------\n");
-        printf("%s, es duplicado de ", impreso->duplicado);
-        printf("%s\n", impreso->archivo);
-        printf("-------------------------------------------------\n\n");
+        
+        printf("%s es duplicado de %s\n\n", impreso->duplicado, impreso->archivo);
 
         impreso = impreso->siguiente;
     }

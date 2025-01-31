@@ -2,7 +2,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include "md5-lib/md5c.c"
-//#include "operaciones_estructuras.h"
+#include "operaciones_estructuras.h"
 #include "obtener_hashes.h"
 
 #define READ 0

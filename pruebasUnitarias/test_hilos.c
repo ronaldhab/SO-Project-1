@@ -5,152 +5,278 @@
 #include <pthread.h>
 #include <unistd.h>
 #include <semaphore.h>
-#include "../hilos.h"
-#include "../semaforos.h"
+#include <stdlib.h>
+#include <stdio.h>
 #include "../estructuras.h"
-#include "../explora_dir.h"
-#include "../operaciones_estructuras.h"
 #include "../obtener_hashes.h"
 
-int finish = 0;
+//Apuntadores de las estructuras
+struct Nodo *tope_pila = NULL;
+struct Nodo_visitados *cabeza = NULL;
+struct Nodo_duplicados *duplicados = NULL;
 
-void *explora_directorios(void* arg){// DE MOMENTO SIN PROBLEMAS
+int cantidad_total = 0; //Variable global para manejar la cantidad de archivos
+pthread_mutex_t mutex_list;
+
+void pop(){
     
-    char* dir = (char*)arg;
+    if(tope_pila != NULL){
+        struct Nodo* eliminado = tope_pila;
+        tope_pila = tope_pila->siguiente;
+        free(eliminado->nombre_archivo);
+        free(eliminado);
+    }
+}
 
-    explora_dir(dir); //La funcion esta en el .c que se llama igual
-    // printf("La direccion es: %s\n", dir);
+void push(char* nombre){
+    struct Nodo *nuevo;
+    nuevo = malloc(sizeof(struct Nodo));
+    
+    //Inicializamos el nuevo nodo
+    nuevo->nombre_archivo = (char*)malloc(NAME_MAX);
+    strcpy(nuevo->nombre_archivo, nombre);
 
-    //sem_post(&coord_hash); //Pasamos el control al codificador de hashes
+    if(tope_pila == NULL){ 
+        tope_pila = nuevo;
+        nuevo->siguiente = NULL;
 
-    pthread_exit(NULL);
+    }else{
+        nuevo->siguiente = tope_pila;
+        tope_pila = nuevo;
+    }
+}
+
+int comparar_hash(char* archivo, char hash[33]) {
+    struct Nodo_visitados *aux = cabeza->siguiente; 
+    int es_duplicado = 0;
+    int visitado = 0;
+
+    while(aux != NULL && !es_duplicado){
+
+        visitado = 1;
+        if(strcmp(aux->valor_hash, hash) == 0){
+            es_duplicado = 1;
+            insertar_duplicados(aux->nombre_archivo, archivo);
+        }
+        aux = aux->siguiente;
+    }
+    return visitado;
+}
+
+//Función para insertar los archivos en la lista de visitados
+void insertar_visitados(char* nombre, char codigo[33]){
+
+    int insertado = 0;
+    struct Nodo_visitados *nuevo;
+    nuevo = malloc(sizeof(struct Nodo_visitados));
+    nuevo->nombre_archivo = (char*)malloc(NAME_MAX);
+    strcpy(nuevo->nombre_archivo, nombre);
+    strcpy(nuevo->valor_hash, codigo);
+    
+    if(cabeza == NULL){
+        cabeza = nuevo;
+        nuevo->siguiente = NULL;
+    }else{
+
+        struct Nodo_visitados *aux = cabeza;
+        while(aux != NULL && !insertado){ 
+            if(strcmp(aux->nombre_archivo, nombre) == 0){
+                nuevo->siguiente = aux->siguiente;
+                aux->siguiente = nuevo;
+
+                insertado = 1;
+            }
+            aux = aux->siguiente;
+        }
+        
+        if(!insertado){
+            nuevo->siguiente = cabeza;
+            cabeza = nuevo;
+        }
+        
+    }
 
 }
 
-void *codifica_hashes(void* arg){// EN CONSTRUCCION (PRIORIDAD)
+//Función para insertar los archivos en la lista de duplicados
+void insertar_duplicados(char* nombre, char* nombre_duplicado){
 
-    char modo = *(char*)arg;
+    int insertado = 0;
+    struct Nodo_duplicados *nuevo;
+    nuevo = malloc(sizeof(struct Nodo_duplicados));
 
-    sleep(0.5f);
-    //sem_wait(&coord_hash); //Esperamos por el explorador de directorios
-    //sem_post(&coord_hash); //Liberamos todos los hilos que estaban en espera
+    //Inicializamos cada uno de los campos del nuevo nodo
+    nuevo->archivo = (char*)malloc(NAME_MAX);
+    nuevo->duplicado = (char*)malloc(NAME_MAX);
+    strcpy(nuevo->archivo, nombre);
+    strcpy(nuevo->duplicado, nombre_duplicado);
+    
+    if(duplicados == NULL){
+        duplicados = nuevo;
+        nuevo->siguiente = NULL;
+    }else{
+        struct Nodo_duplicados *aux = duplicados;
+
+        while(aux != NULL && !insertado){ 
+            if((strcmp(aux->archivo, nombre) == 0) && (strcmp(aux->duplicado, nombre_duplicado) == 0) ){
+
+                insertado = 1;
+            }
+            aux = aux->siguiente;
+        }
+        
+        if(!insertado){
+            nuevo->siguiente = duplicados;
+            duplicados = nuevo;
+        }
+    }
+}
+
+
+int *codifica_hashes(void* arg){
+
+    char modo = (char*)arg;
+    printf("Llegue aqui\n");
 
     while (tope_pila!=NULL)
     {
-        if(modo == 'e'){
-            obtener_hashes_exec(tope_pila->nombre_archivo);
+        //Sección crítica para manipular la pila de archivos
+            if(tope_pila!=NULL){
+                if(modo == 'e'){
 
-        }else if(modo == 'l'){
-            obtener_hashes_libreria(tope_pila->nombre_archivo);
-        }
+                    //Obtenemos el hash del archivo en moodo ejecutable
+                    obtener_hashes_exec(tope_pila->nombre_archivo);
+                    return 1;
 
-        sem_wait(&visitados_mutex); //Seccion critica lista de visitados
-        insertar_visitados(tope_pila->nombre_archivo, hash);   
-        sem_post(&visitados_mutex);
-       
-        //imprimir_lista();
+                }else if(modo == 'l'){
 
-        sem_post(&compara_coord); //Le pasamos el control al hilo del comparador
-        sem_wait(&coord_hash); //Esperamos por el comparador
-        //sem_post(&coord_hash);
-        pop();
-            
-        //imprimir_lista();
+                    //Obtenemos el hash del archivo en moodo libreria
+                    obtener_hashes_libreria(tope_pila->nombre_archivo);
+                    return 2;
+                }
+
+                //Insertamos el nombre y el hash del archivo en la lista de visitados 
+                insertar_visitados(tope_pila->nombre_archivo, hash);   
+                pop();//Sacamos el nombre del archivo de la pila
+            }
+
     }
-
-    finish = 1;
     pthread_exit(NULL);
+    return 0;
 }
 
-void *compara_hashes(void* arg){// EN CONSTRUCCION 
+void *compara_hashes(void* arg){
+    //Compara hasta que la cantidad de archivos por comparar sea 0
+    while(cantidad_total>0){
+        pthread_mutex_lock(&mutex_list);//Seccion critica, recorremos la lista de visitados
+        comparar_hash(cabeza->nombre_archivo, cabeza->valor_hash);
+        pthread_mutex_unlock(&mutex_list);   
 
-    /*SE ESTA AGREGANDO MAS DE UNA VEZ EL MISMO ELEMENTO A LA LISTA DE DUPLICADOS OJO!*/
-
-    //sem_wait(&compara_coord);//Esperamos por el codificador de hashes
-
-    while(!finish){
-        sem_wait(&compara_coord);//Esperamos por el codificador de hashes
-
-        sem_wait(&visitados_mutex);//Seccion critica, recorremos la lista de visitados
-            comparar_hash(cabeza->nombre_archivo, cabeza->valor_hash);
-            //imprimir_lista_duplicados();
-        sem_post(&visitados_mutex);
-        sem_post(&coord_hash);//Liberamos al codificador de hashes
+        cantidad_total--; //Decrementamos la cantidad de archivos
     }
 
     pthread_exit(NULL);
 }
 
-int crear_hilos(int cant, char* dir, char hash_modo) {
+int crear_hilos(int cant_hilos, int cant_archivos, char hash_modo) {
 
-    //Inicializamos los semaforos que usaremos
-    inicializar_semaforos();
+    //Guardamos en cantidad_total la cantidad de archivos
+    cantidad_total = cant_archivos;
+
+    pthread_mutex_init(&mutex_list, NULL);
 
     //Arreglo de hilos
-    pthread_t hilos[cant];
-    //Atributos para colocar detached al hilo del comparador (SOLO PARA PRUEBAS)
-    pthread_attr_t atributos;
-    pthread_attr_init(&atributos);
-    pthread_attr_setdetachstate(&atributos, PTHREAD_CREATE_DETACHED);
-
-    int i = 0;
-    int resto;
+    pthread_t hilos[cant_hilos];
 
     //Apuntadores para poder pasarle los argumentos a los hilos
-    char* directorio = (char*)malloc(sizeof(NAME_MAX));
-    directorio = dir;
     char* modo = malloc(sizeof(char));
     modo = &hash_modo;
 
+    int cuenta_hilos = 0;
+    //Creamos los hilos de codificar los hashes y de comparar los hashes
+    for(int i=0; i < cant_hilos; i++) {   
+        if(i%2==0){
 
-    // A PARTIR DE AQUI DA EL ERROR DE VIOLACION DE SEGMENTO
-    
-    //Creamos el hilo de explorar directorio (DE MOMENTO SERÁ ÚNICO)
-    if(pthread_create(hilos + i, NULL, &explora_directorios, directorio) != 0) {
-        perror("Error al crear el hilo");
-        return 1;
-    }
-    i++;
+            //Hilos de codificar hashes
+            if(pthread_create(hilos + i, NULL, &codifica_hashes, modo) != 0) {
+                perror("Error al crear el hilo");
+                cuenta_hilos--;
+            } 
+            cuenta_hilos++;
+            
 
-    //Creamos los hilos de codificar los hashes (LA LOGICA ES QUE TENGA TODOS LOS HILOS MENOS 2)
-    for(; i <= cant - 2; i++) {      
-        if(pthread_create(hilos + i, NULL, &codifica_hashes, modo) != 0) {
-            perror("Error al crear el hilo");
-            return 1;
-        } 
-    }
-
-    //Creamos el hilo para el comparador
-    if(pthread_create(hilos + i, NULL, &compara_hashes, NULL) != 0) {
-        perror("Error al crear el hilo");
-        return 1;
-
+        }else{
+            
+            //Hilos de comparar hashes
+            if(pthread_create(hilos + i, NULL, &compara_hashes, NULL) != 0) {
+                perror("Error al crear el hilo");
+                cuenta_hilos--;
+            }
+            cuenta_hilos++;
+            
+        }   
     }
 
     //Join de los hilos creados
-    for(int i = 0; i < cant-1; i++) {
+    for(int i = 0; i < cant_hilos; i++) {
         pthread_join(hilos[i], NULL);
     }
 
-    //Destruimos los semaforos
-    sem_destroy(&coord_hash);
-    sem_destroy(&compara_coord);
-    sem_destroy(&pila_hash_mutex);
-    sem_destroy(&visitados_mutex);
-    return 0;
-} 
+    //destruimos el mutex
+    pthread_mutex_destroy(&mutex_list);
+
+    return cuenta_hilos;
+}
 
 void test_crear_hilos() {
-    crear_hilos(3, "ProofCode", 'e');
-    CU_ASSERT(crear_hilos(4, "ProofCode", 'e') == 0);
-    CU_ASSERT(crear_hilos(4, "ProofCode", 'e') == 1);
+    
+    // Simulando que se crearon o no se crearon la cantidad de hilos correctos
+    CU_ASSERT(crear_hilos(4, 3, 'e') == 4); //La cantidad de hilos y el resultado es el mismo, pasa la prueba
+    CU_ASSERT(crear_hilos(7, 3, 'e') == 7); //La cantidad de hilos y el resultado es el mismo, pasa la prueba
+    CU_ASSERT(crear_hilos(4, 3, 'e') == 2); //La cantidad de hilos y el resultado no es el mismo, no pasa la prueba
+}
+
+void test_compara_hashes() {
+    insertar_visitados("archivo1", "hash1");
+    CU_ASSERT(comparar_hash("archivo1", "hash1") == 1); //El archivo ya fue visitado, pasa la prueba
+    CU_ASSERT(comparar_hash("ProofCode/test.txt", "hash2") == 0); //El archivo no ha sido visitado, no pasa la prueba
+}
+
+void test_codifica_hashes() {
+    tope_pila = malloc(sizeof(struct Nodo));
+    if (tope_pila == NULL) {
+        CU_FAIL("No se pudo asignar memoria para tope_pila");
+        return;
+    }
+
+    // Inicializamos el nodo
+    tope_pila->nombre_archivo = malloc(NAME_MAX);
+    if (tope_pila->nombre_archivo == NULL) {
+        free(tope_pila);
+        CU_FAIL("No se pudo asignar memoria para nombre_archivo");
+        return;
+    }
+
+    strcpy(tope_pila->nombre_archivo, "ProofCode/prueba.txt");
+
+    // Llamamos a la función y verificamos el resultado
+    CU_ASSERT(codifica_hashes('e') == 1); // El archivo se codificó correctamente, pasa la prueba
+
+    // Liberamos la memoria asignada
+    free(tope_pila->nombre_archivo);
+    free(tope_pila);
 }
 
 int main() {
+    insertar_visitados("archivo1", "hash1");
+
     CU_initialize_registry();
     CU_pSuite suite = CU_add_suite("Hilos Suite", 0, 0);
     CU_add_test(suite, "test_crear_hilos", test_crear_hilos);
+    CU_add_test(suite, "test_compara_hashes", test_compara_hashes);
+    CU_add_test(suite, "test_codifica_hashes", test_codifica_hashes);
     CU_basic_run_tests();
     CU_cleanup_registry();
     return 0;
 }
+
