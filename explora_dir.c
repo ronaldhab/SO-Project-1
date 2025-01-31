@@ -49,6 +49,6 @@ int explora_dir(const char *directorio){
         }
     }
     closedir(carpeta);
-
+    
     return count;
 }

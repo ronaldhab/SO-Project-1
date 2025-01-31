@@ -13,9 +13,6 @@
 
 char hash[33];
 
-// char hash[33] = { 0 };
-// char hash[33] = "0e6f4cd16a3b7f89e6dbb2cc365d3964";
-
 /*Funcion para obtener los hash en modo libreria*/
 void obtener_hashes_libreria(char* nombre_archivo) {
     MDFile(nombre_archivo, hash);
