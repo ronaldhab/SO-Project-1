@@ -27,22 +27,22 @@ int es_directorio_valido(const char *ruta) {
 int numero_de_hilos_validos(char *argv, const char *endptr, long num) {
     if (errno == ERANGE) { // Overflow o underflow
         fprintf(stderr, "Error: El número está fuera del rango representable.\n");
-        return 1;
+        return 0;
     }
     else if (endptr == argv[2]) { // No se pudo convertir ningún carácter
         fprintf(stderr, "Error: No se ingresó un número válido.\n");
-        return 1;
+        return 0;
     }
     else if (*endptr != '\0') { // Caracteres no numéricos después del número
         fprintf(stderr, "Error: Caracteres no numéricos en el segundo argumento.\n");
-        return 1;
+        return 0;
     }
     else if(num < 1) {
         printf("El numero debe ser entero positivo\n");
-        return 1;
+        return 0;
     }
     
-    return 0;  
+    return 1;  
 }
 
 // ./duplicados -t <numero de threads> -d <directorio de inicio> -m <e | l >
