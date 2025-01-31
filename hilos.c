@@ -116,6 +116,4 @@ void crear_hilos(int cant_hilos, int cant_archivos, char hash_modo) {
     sem_destroy(&coord_hash);
     sem_destroy(&hash_mutex);
     sem_destroy(&compara_coord);
-    sem_destroy(&pila_hash_mutex);
-    sem_destroy(&visitados_mutex);
 } 

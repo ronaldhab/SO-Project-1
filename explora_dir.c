@@ -1,6 +1,5 @@
 #define _DEFAULT_SOURCE
 #include <dirent.h>
-#include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 #include "operaciones_estructuras.h"
@@ -49,6 +48,6 @@ int explora_dir(const char *directorio){
         }
     }
     closedir(carpeta);
-
+    
     return count;
 }

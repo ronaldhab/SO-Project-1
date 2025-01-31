@@ -34,14 +34,11 @@ int explora_dir(const char *directorio){
             strcat(nombre_archivo, "/");
             strcat(nombre_archivo, entrada_dir->d_name);
 
-            /*Introducimos el nombre del archivo en la pila de "Por visitar"
-            Al ser un recurso compartido debe manipularse dentro de una
-            seccion critica*/
-            //sem_wait(&pila_hash_mutex);
+            /*Introducimos el nombre del archivo en la pila de "Por visitar"*/
+            
                 if(!esta_contenido(nombre_archivo)){
                     push(nombre_archivo);
                 }
-            //sem_post(&pila_hash_mutex);
             
             count++;
             

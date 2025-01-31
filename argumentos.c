@@ -24,7 +24,7 @@ int es_directorio_valido(const char *ruta) {
     }
 }
 
-int numero_de_hilos_validos(char *argv, const char *endptr, long num) {
+int numero_de_hilos_validos(char *argv[], const char *endptr, long num) {
     if (errno == ERANGE) { // Overflow o underflow
         fprintf(stderr, "Error: El número está fuera del rango representable.\n");
         return 0;
@@ -38,7 +38,7 @@ int numero_de_hilos_validos(char *argv, const char *endptr, long num) {
         return 0;
     }
     else if(num < 1) {
-        printf("El numero debe ser entero positivo\n");
+        printf("El numero de hilos debe ser un entero positivo mayor que 0\n");
         return 0;
     }
     
@@ -67,7 +67,7 @@ void identificar_argumentos(int argc, char *argv[]) {
     //Comprobacion tercer argumento
     char *endptr;
     long num = strtol(argv[2], &endptr, 10);
-    if(numero_de_hilos_validos(argv[2], endptr, num) == 0) {
+    if(numero_de_hilos_validos(argv, endptr, num) == 0) {
         exit(1);
     }
 
