@@ -6,6 +6,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
+#include "../estructuras.h"
+#include "../operaciones_estructuras.h"
+#include "../obtener_hashes.h"
+
 
 /*Contador provisional*/
 int count = 0;
