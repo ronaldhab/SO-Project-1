@@ -1,5 +1,4 @@
 #include <stdlib.h>
-#include <stdio.h>
 #include "argumentos.h"
 #include "operaciones_estructuras.h"
 #include "explora_dir.h"
