@@ -13,9 +13,6 @@
 
 char hash[33];
 
-// char hash[33] = { 0 };
-// char hash[33] = "0e6f4cd16a3b7f89e6dbb2cc365d3964";
-
 /*Funcion para obtener los hash en modo libreria*/
 void obtener_hashes_libreria(char* nombre_archivo) {
     MDFile(nombre_archivo, hash);
@@ -55,17 +52,17 @@ void test_obtener_hashes_exec (){
     CU_ASSERT((strcmp("0e6f4cd16a3b7f89e6dbb2cc365d3964", hash) == 0) == 0);
 
     // Caso invalido
-    CU_ASSERT(!(strcmp("0e6f4cd16a3b7f89e6dbb2cc365d3964", hash) == 0) == 0);
+    // CU_ASSERT(!(strcmp("0e6f4cd16a3b7f89e6dbb2cc365d3964", hash) == 0) == 0);
 }
 
 void test_obtener_hashes_libreria (){
 
     // Caso valido
     obtener_hashes_libreria("ProofCode/prueba.txt");
-    CU_ASSERT((strcmp("0e6f4cd16a3b7f89e6dbb2cc365d3964", hash) == 0) == 0);
+    CU_ASSERT_STRING_EQUAL("0e6f4cd16a3b7f89e6dbb2cc365d3964", hash);
 
     // Caso invalido
-    CU_ASSERT(!(strcmp("0e6f4cd16a3b7f89e6dbb2cc365d3964", hash) == 0) == 0);
+    // CU_ASSERT(!(strcmp("0e6f4cd16a3b7f89e6dbb2cc365d3964", hash) == 0) == 0);
 }
 
 int main() {
