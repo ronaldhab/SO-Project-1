@@ -3,7 +3,7 @@
 #include <pthread.h>
 #include <semaphore.h>
 #include <unistd.h>
-// #include "argumentos.h"
+#include "argumentos.h"
 #include "operaciones_estructuras.h"
 #include "explora_dir.h"
 #include "estructuras.h"
