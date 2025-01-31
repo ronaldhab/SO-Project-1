@@ -9,11 +9,11 @@
 
 int cantidad_total = 0; //Variable global para manejar la cantidad de archivos
 
-pthread_mutex_t mutex_list;
+pthread_mutex_t mutex_list; //Mutex para la lista de visitados
 
 void *codifica_hashes(void* arg){
 
-    char modo = *(char*)arg;
+    char modo = *(char*)arg; //Modo de codificacion de hashes
 
     while (tope_pila!=NULL)
     {
