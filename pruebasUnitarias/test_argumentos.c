@@ -104,7 +104,7 @@ void test_numero_de_hilos_validos(void) {
     CU_ASSERT(numero_de_hilos_validos(argv, endptr, num) == 1);
 
     // Caso invalido
-    argv = "m";
+    argv = "5";
     num = strtol(argv, &endptr, 10);
     CU_ASSERT(numero_de_hilos_validos("f", endptr, 0) == 0);
 }
