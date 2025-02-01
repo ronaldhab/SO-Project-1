@@ -11,12 +11,8 @@
 void test_esta_contenido () {
     push("test1_file");
 
-    // Casos validos
     CU_ASSERT(esta_contenido("test1_file") == 1);
     CU_ASSERT(esta_contenido("test2_file") == 0);
-
-    // Caso invalido
-    // CU_ASSERT(esta_contenido("test2_file") == 1);
 }
 
 void test_push () {

@@ -231,13 +231,11 @@ void test_crear_hilos() {
     // Simulando que se crearon o no se crearon la cantidad de hilos correctos
     CU_ASSERT(crear_hilos(4, 3, 'e') == 4); //La cantidad de hilos y el resultado es el mismo, pasa la prueba
     CU_ASSERT(crear_hilos(7, 3, 'e') == 7); //La cantidad de hilos y el resultado es el mismo, pasa la prueba
-    // CU_ASSERT(crear_hilos(4, 3, 'e') == 2); //La cantidad de hilos y el resultado no es el mismo, no pasa la prueba
 }
 
 void test_compara_hashes() {
     insertar_visitados("archivo1", "hash1");
     CU_ASSERT(comparar_hash("archivo1", "hash1") == 1); //El archivo ya fue visitado, pasa la prueba
-    // CU_ASSERT(comparar_hash("ProofCode/test.txt", "hash2") == 0); //El archivo no ha sido visitado, no pasa la prueba
 }
 
 void test_codifica_hashes() {

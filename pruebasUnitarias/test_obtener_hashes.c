@@ -47,22 +47,15 @@ void obtener_hashes_exec(char* nombre_archivo) {
 }
 
 void test_obtener_hashes_exec (){
-    // Caso valido
+
     obtener_hashes_exec("ProofCode/prueba.txt");
     CU_ASSERT((strcmp("0e6f4cd16a3b7f89e6dbb2cc365d3964", hash) == 0) == 0);
-
-    // Caso invalido
-    // CU_ASSERT(!(strcmp("0e6f4cd16a3b7f89e6dbb2cc365d3964", hash) == 0) == 0);
 }
 
 void test_obtener_hashes_libreria (){
 
-    // Caso valido
     obtener_hashes_libreria("ProofCode/prueba.txt");
     CU_ASSERT_STRING_EQUAL("0e6f4cd16a3b7f89e6dbb2cc365d3964", hash);
-
-    // Caso invalido
-    // CU_ASSERT(!(strcmp("0e6f4cd16a3b7f89e6dbb2cc365d3964", hash) == 0) == 0);
 }
 
 int main() {
